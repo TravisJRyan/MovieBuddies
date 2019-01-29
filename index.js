@@ -11,6 +11,9 @@ app.listen('3000', () => {
 app.use(express.static(__dirname));
 
 // Route for the home page
-app.get('/', function(req, res){
-    res.render("test"); // Render the pug file "test"
+app.get('/mystuff', function(req, res){
+    databaseResult = "terry"
+    res.render("test", {
+        myvar : databaseResult
+    }); // Render the pug file "test"
 });
