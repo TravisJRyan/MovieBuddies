@@ -1,0 +1,22 @@
+{
+  "name": "moviebuddies",
+  "version": "1.0.0",
+  "description": "A social media website for movie-lovers",
+  "main": "index.js",
+  "scripts": {
+    "test": "npm test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/TravisJRyan/MovieBuddies.git"
+  },
+  "author": "Travis Ryan, Mary Odenthal, Terry James",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/TravisJRyan/MovieBuddies/issues"
+  },
+  "homepage": "https://github.com/TravisJRyan/MovieBuddies#readme",
+  "dependencies": {
+    "semantic-ui": "^2.4.2"
+  }
+}
