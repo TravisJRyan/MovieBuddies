@@ -12,8 +12,15 @@ app.use(express.static(__dirname));
 
 // Route for the home page
 app.get('/mystuff', function(req, res){
-    databaseResult = "terry"
+    databaseResult = ["one", "two", "three", "four"];
     res.render("test", {
         myvar : databaseResult
     }); // Render the pug file "test"
 });
+
+// Route for the login page
+app.get('/login', function(req, res){
+    res.render("login");
+});
+
+// Colors #3F0D12 #A71D31 #F2F1CD
