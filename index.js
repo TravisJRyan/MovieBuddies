@@ -18,14 +18,13 @@ app.get("/mystuff", function(req, res){
     }); // Render the pug file "test"
 });
 
-// Route for login page
-app.get("/login", function(req, res){
+// Route for home page
+app.get("/", function(req, res){
     res.render("login");
 });
 
-// Route for home page
-app.get("/", function(req, res){
-    res.render("home");
+app.get("/*", function(req, res){
+    res.redirect("/");
 });
 
 // Colors #3F0D12 #A71D31 #F2F1CD
