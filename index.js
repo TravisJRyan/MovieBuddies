@@ -23,8 +23,14 @@ app.get("/", function(req, res){
     res.render("login");
 });
 
+//Route to userPage
+app.get("/userPage", function(req, res){
+    res.render("userPage");
+});
+
 app.get("/*", function(req, res){
     res.redirect("/");
 });
+
 
 // Colors #3F0D12 #A71D31 #F2F1CD
