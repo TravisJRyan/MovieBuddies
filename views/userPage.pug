@@ -10,7 +10,7 @@ nav.navbar.navbar-expand-lg.navbar-dark.bg-dark
   #navbarSupportedContent.collapse.navbar-collapse
     ul.navbar-nav.mr-auto
       li.nav-item.active
-        a.nav-link(href='login.pug')
+        a.nav-link(href='/')
           | Log out 
           span.sr-only (current)
     form.form-inline.my-2.my-lg-0
@@ -18,7 +18,7 @@ nav.navbar.navbar-expand-lg.navbar-dark.bg-dark
       button.btn.btn-outline-success.my-2.my-sm-0(type='submit') Search
 .container
   .row
-    .(class='col-sm-9.col-md-7.col-lg-5')
+    .col-sm-9.col-md-7.col-lg-5
       img.img-thumbnail.mt-2(src='img/cat.jpg' alt='A CAT')
       br
       .card.mt-2(style='width: 11.3rem;')
@@ -26,20 +26,20 @@ nav.navbar.navbar-expand-lg.navbar-dark.bg-dark
           h5.card-title Name
           p.card-text bio information
           a.card-link(href='#') link to friends
+          br
           a.card-link(href='#') link to movies
-    .(class='col-sm-9.col-md-7.col-lg-5')
-      .ml-4.mt-2
+    .col-sm-9.col-md-7.col-lg-5
+      .ml-2.mt-2
         table
           thead
             tr
               th
-                h4 Image
               th(colspan='2')
                 h4 Movie Title
           tbody
             tr
               td
-                img(src='img/aquaman')
+                img(src='img/aquaman.jpg')
               td
                 h5 aquaman
             tr
