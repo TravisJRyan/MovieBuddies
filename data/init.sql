@@ -11,17 +11,17 @@ Connection information in Google Drive Docs
 DROP TABLE USERS;	*/
 
 CREATE TABLE USERS (
-    email VARCHAR(254),
-    pass VARCHAR(255),
-    firstName VARCHAR(20),
-    lastName VARCHAR(20),
-    age INT, 
-    gender CHAR(1),
-    city VARCHAR(20),
-    state CHAR(2),
-    profileDecsription TEXT,
-    
-    PRIMARY KEY(email)
+  email VARCHAR(254),
+  pass VARCHAR(255),
+  firstName VARCHAR(20),
+  lastName VARCHAR(20),
+  age INT, 
+  gender CHAR(1),
+  city VARCHAR(20),
+  state CHAR(2),
+  profileDecsription TEXT,
+  
+  PRIMARY KEY(email)
 );
 
 /* Friends Table
@@ -30,9 +30,9 @@ CREATE TABLE USERS (
 DROP TABLE FRIENDS;		*/
 
 CREATE TABLE FRIENDS  (
-	sender VARCHAR(254),
-    receiver VARCHAR(254),
-    status CHAR(1),
+  sender VARCHAR(254),
+  receiver VARCHAR(254),
+  status CHAR(1),
     
 	PRIMARY KEY(sender, receiver)
 );
@@ -44,11 +44,19 @@ DROP TABLE RATINGS; 	*/
 
 CREATE TABLE RATINGS (
 	email VARCHAR(254),
-    movieID VARCHAR(10),
+  movieID VARCHAR(10),
 	rating INT,
     
-    PRIMARY KEY(email, movieID)
+  PRIMARY KEY(email, movieID)
 );
+
+
+/* Foreign Key Relations */
+
+ALTER TABLE FRIENDS ADD FOREIGN KEY (sender) REFERENCES USERS(email);
+ALTER TABLE FRIENDS ADD FOREIGN KEY (receiver) REFERENCES USERS(email);
+ALTER TABLE RATINGS ADD FOREIGN KEY (email) REFERENCES USERS(email);
+
 
 
 
