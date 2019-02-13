@@ -17,8 +17,8 @@ CREATE TABLE USERS (
   age INT, 
   gender CHAR(1),
   city VARCHAR(20),
-  state CHAR(2),
-  profileDecsription TEXT,
+  st CHAR(2),
+  profileDescription TEXT,
   
   PRIMARY KEY(email)
 );
