@@ -8,6 +8,18 @@ module.exports.createAccount = function(first,last,email,password){
     return true;
 }
 
+//TODO: get all of user's information
+module.exports.getUser = function(email){
+    return {
+        "email" : email // TODO return block of user info
+    };
+}
+
+//TODO: update all fields
+module.exports.updateUser = function(){
+
+}
+
 //TODO: function processes an update of a user's privacy setting
 module.exports.updatePrivacySettings = function(email, privacyOption){
     return true;

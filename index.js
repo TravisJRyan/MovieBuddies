@@ -93,9 +93,9 @@ app.get("/recommend", function(req,res){
     res.render("recommend"); // TODO
 });
 
-// Error page (404 page not found)
+// 404 Page Not Found page
 app.get("/404", function(req,res){
-    res.render("404"); // TODO
+    res.render("404");
 });
 
 // Redirect unknown routes to 404 page

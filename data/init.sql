@@ -49,8 +49,3 @@ CREATE TABLE RATINGS (
     
     PRIMARY KEY(email, movieID)
 );
-
-
-
-
-
