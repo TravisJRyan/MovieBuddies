@@ -62,12 +62,14 @@ app.get("/mystuff", function(req, res){
 
 app.get("/anothertest", function(req, res){
     //hit API
-    var title="shrek";
+    var title="aquaman";
     request('https://www.omdbapi.com/?t='+title+'&apikey=b09eb4ff', function (error, response, body) {
         console.log(body);
-        var title=JSON.parse(body)["Poster"];
-        res.render("somepage", {
-            shrekdata: title
+        var image=JSON.parse(body)["Poster"];
+        var title=JSON.parse(body)["Title"];
+        res.render("userPage", {
+            imagedata: image, 
+            titledata: title
         });
     });
 });

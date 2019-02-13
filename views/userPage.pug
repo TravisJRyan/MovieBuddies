@@ -4,7 +4,7 @@ head
   meta(http-equiv='X-UA-Compatible' content='IE=edge')
   title MovieBuddies
   meta(name='viewport' content='width=device-width, initial-scale=1')
-  link(rel='stylesheet' type='text/css' media='screen' href='style.css')
+  link(rel='stylesheet' href='style.css')
   link(rel='stylesheet' href='https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css' integrity='sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO' crossorigin='anonymous')
 nav.navbar.navbar-expand-lg.navbar-dark.bg-dark
   #navbarSupportedContent.collapse.navbar-collapse
@@ -18,7 +18,7 @@ nav.navbar.navbar-expand-lg.navbar-dark.bg-dark
       button.btn.btn-outline-success.my-2.my-sm-0(type='submit') Search
 .container
   .row
-    .col-sm-9.col-md-7.col-lg-5
+    .col
       img.img-thumbnail.mt-2(src='img/cat.jpg' alt='A CAT')
       br
       .card.mt-2(style='width: 11.3rem;')
@@ -28,20 +28,24 @@ nav.navbar.navbar-expand-lg.navbar-dark.bg-dark
           a.card-link(href='#') link to friends
           br
           a.card-link(href='#') link to movies
-    .col-sm-9.col-md-7.col-lg-5
-      .ml-2.mt-2
-        table
-          thead
+    .col
+      .mt-2
+        table.table.table-bordered
+          thead.thead-dark
             tr
               th
-              th(colspan='2')
-                h4 Movie Title
+              th
+                h5 Movie Title
+              th
+                h5 Rating 
           tbody
             tr
               td
-                img(src='img/aquaman.jpg')
+                img(src=imagedata width="20%" height="20%" alt="image")
               td
-                h5 aquaman
+                h5=titledata
+              td
+                h5 5
             tr
               td
                 img(src='img/upside.jpg')
@@ -57,6 +61,7 @@ nav.navbar.navbar-expand-lg.navbar-dark.bg-dark
                 img(src='img/glass.jpg')
               td
                 h5 Glass
+    .col
 script(src='https://code.jquery.com/jquery-3.3.1.slim.min.js' integrity='sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo' crossorigin='anonymous')
 script(src='https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js' integrity='sha384-wHAiFfRlMFy6i5SRaxvfOCifBUQy1xHdJ/yoi7FRNXMRBu5WHdZYu1hA6ZOblgut' crossorigin='anonymous')
 script(src='https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/js/bootstrap.min.js' integrity='sha384-B0UglyR+jN6CkvvICOB2joaf5I4l3gm9GU6Hc1og6Ls7i6U/mkkaduKaBhlAXv9k' crossorigin='anonymous')
