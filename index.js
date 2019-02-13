@@ -98,9 +98,15 @@ app.get("/404", function(req,res){
     res.render("404");
 });
 
+//Route to userPage
+app.get("/userPage", function(req, res){
+    res.render("userPage");
+});
+
 // Redirect unknown routes to 404 page
 app.get("/*", function(req, res){
     res.redirect("/404");
 });
+
 
 // Colors #3F0D12 #A71D31 #F2F1CD
