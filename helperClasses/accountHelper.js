@@ -37,7 +37,14 @@ module.exports.acceptFriendRequest = function(senderEmail, acceptingEmail){
 
 //TODO: function returns movie IDs and ratings for all ratings of a given user
 module.exports.getRatings = function(email){
-    return true;
+    return { 
+        "i123142" : 5,
+        "i123142" : 4,
+        "i123142" : 6,
+        "i123142" : 2,
+        "i123142" : 3,
+        "i123142" : 9
+    };
 }
 
 //TODO: function returns all friend emails for a given user

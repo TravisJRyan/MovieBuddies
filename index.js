@@ -1,6 +1,7 @@
 const express = require("express"); // Express module for creating a server to route pages
 const app = express(); // init Express server as a variable
 const session = require('express-session'); // Manages session variables
+const request = require('request'); // HTTP request module
 app.set("view engine", "pug"); // have the server use Pug to render pages
 
 // Helper Classes
@@ -32,7 +33,7 @@ app.use(
 // POST operation for logging in
 app.post("/login", function(req,res){
     if(accountHelper.validate(req.body.email, req.body.password)){
-        req.session.username=req.body.email; // log in with session data
+        req.session.email=req.body.email; // log in with session data
         res.redirect("/"); // redirect to landing page
     } else{
         res.redirect("/"); // failure logging in, refresh without login
@@ -47,10 +48,28 @@ app.post("/logout", function(req,res){
 
 // Route for the home page
 app.get("/mystuff", function(req, res){
-    databaseResult = ["one", "two", "three", "four"];
+    // ask database for users ratings
+    var databaseResult = accountHelper.getRatings("blablah@gmail.com");
+    var userRatingsInfo = {};
+    for(var i = 0; i < databaseResult.length; i++){
+        var apiResult = ""; // hit api and get movie title, photo, etc.
+        userRatingsInfo.add(apiResult);
+    }
     res.render("test", {
         myvar : databaseResult
     }); // Render the pug file "test"
+});
+
+app.get("/anothertest", function(req, res){
+    //hit API
+    var title="shrek";
+    request('https://www.omdbapi.com/?t='+title+'&apikey=b09eb4ff', function (error, response, body) {
+        console.log(body);
+        var title=JSON.parse(body)["Poster"];
+        res.render("somepage", {
+            shrekdata: title
+        });
+    });
 });
 
 // Route for home page
