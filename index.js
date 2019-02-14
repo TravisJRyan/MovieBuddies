@@ -2,6 +2,7 @@ const express = require("express"); // Express module for creating a server to r
 const app = express(); // init Express server as a variable
 const session = require('express-session'); // Manages session variables
 const request = require('request'); // HTTP request module
+const axios = require('axios'); // Used for Promises
 app.set("view engine", "pug"); // have the server use Pug to render pages
 
 // Helper Classes
@@ -60,10 +61,11 @@ app.get("/mystuff", function(req, res){
     }); // Render the pug file "test"
 });
 
+
 app.get("/anothertest", function(req, res){
     //hit API
     var title="aquaman";
-    request('https://www.omdbapi.com/?t='+title+'&apikey=b09eb4ff', function (error, response, body) {
+    axios.get('https://www.omdbapi.com/?t='+title+'&apikey=b09eb4ff', function (error, response, body) {
         console.log(body);
         var image=JSON.parse(body)["Poster"];
         var title=JSON.parse(body)["Title"];
@@ -121,7 +123,15 @@ app.get("/404", function(req,res){
 
 //Route to userPage
 app.get("/userPage", function(req, res){
-    res.render("userPage");
+    var title="aquaman";
+    request('https://www.omdbapi.com/?t='+title+'&apikey=b09eb4ff', function(error,response, body){
+        var image = JSON.parse(body)["Poster"];
+        var title = JSON.parse(body)["Title"];
+        res.render("userPage",{
+            imagedata: image,
+            titledata: title
+        });
+    });  
 });
 
 // Redirect unknown routes to 404 page
