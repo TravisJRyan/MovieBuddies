@@ -74,6 +74,27 @@ app.get("/anothertest", function(req, res){
     });
 });
 
+/* ASYNCHRONOUS EXAMPLE
+ app.get("/anothertest", function(req, res){
+    //hit API
+    var movieTitles = [1, 2, 3, 4, 5]
+    var numberOfRequests = movieTitles.length;
+    var requestsFinished = 0;
+    var data = {};
+    for(var i = 0; i < numberOfRequests; i++){
+        request('https://www.omdbapi.com/?t='+title+'&apikey=b09eb4ff', function (error, response, body) {
+            requestsFinished++;
+            data += body;
+            if(requestsFinished==numberOfRequests){
+                res.render("userPage", {
+                    data: data
+                });
+            }
+        });
+    }
+    done = false;
+}); */
+
 // Route for home page
 app.get("/", function(req, res){
     res.render("login"); // TODO
