@@ -3,7 +3,22 @@ module.exports.recommend = function(email){
     return [];
 }
 
-//TODO: function processes a new movie rating for a user
-module.exports.addRating = function(email, movieId, rating){
+//TODO: TESITNG
+// function processes a new movie rating for a user
+// returns false if insert operation failed, true if success
+module.exports.addRating = function(email, movieID, rating){
+
+    //exit if null values
+    if (email == NULL || movieID == NULL || rating == NULL)
+        return false;
+    
+    //insert query
+    let newRatingSQL = "INSERT INTO ratings (email, movieID, rating) VALUES('"+
+        email+"','"+movieID+"',"+rating+");";
+
+    let newRatingQuery = DB.newRatingQuery(newRatingSQL, (err, results) => {    
+        if (err) throw error;
+    });
+
     return true;
 }
