@@ -24,14 +24,14 @@ CREATE TABLE USERS (
 );
 
 /* Friends Table
-    status = A - active, N - none, P - pending
+    status: 0 = Pending, 1 = Active, -1 = Blocked
 
 DROP TABLE FRIENDS;		*/
 
 CREATE TABLE FRIENDS  (
   sender VARCHAR(254),
   receiver VARCHAR(254),
-  status CHAR(1),
+  friendshipStatus int,
     
 	PRIMARY KEY(sender, receiver)
 );

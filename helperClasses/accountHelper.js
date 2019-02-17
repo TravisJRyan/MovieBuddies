@@ -4,7 +4,7 @@ module.exports.authenticate = function(email, password){
 }
 
 //TODO: TESTING
-//function processes a new account creation
+// function processes a new account creation
 module.exports.createAccount = function(first,last,email,password){
     // return false if null values
     if (first == NULL || last == NULL || email == NULL || password == NULL)
@@ -64,7 +64,28 @@ module.exports.updatePrivacySettings = function(email, privacyOption){
 
 //TODO: function processes a new friend request being sent
 module.exports.sendFriendRequest = function(senderEmail, receiverEmail){
-    return true;
+
+    if (senderEmail == NULL || receiverEmail == NULL) // Check for Null values
+        return false;
+
+    // Check for existing friendship
+    let checkExistingSQL = "SELECT sender FROM friends WHERE (sender='"+
+             sendermail+"' OR receiver='"+receiverEmail+"');";
+
+    let checkExistingQuery = DB.checkExistingQuery(checkExistingSQL, (err, results) => {
+        if (err) throw err;
+        if (results[0] == undefined){ // If no friendship, create new
+
+            let addNewFriendSQL = "INSERT INTO friends (sender, receiver, friendshipStatus) VALUES('"+
+                 sendermail+"','"+receiverEmail+"',0);";
+
+            let addNewFriendQuery = DB.addNewFriendQuery(addNewFriendSQL, (err, results) => {
+                if (err) throw err;
+
+            });
+        }
+    });
+    return false; //Otherwise false for no new creation
 }
 
 //TODO: function processes the accepting of a friend request
