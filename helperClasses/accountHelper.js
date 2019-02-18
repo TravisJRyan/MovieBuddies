@@ -62,7 +62,8 @@ module.exports.updatePrivacySettings = function(email, privacyOption){
     return true;
 }
 
-//TODO: function processes a new friend request being sent
+//TODO: TESTING
+//function processes a new friend request being sent
 module.exports.sendFriendRequest = function(senderEmail, receiverEmail){
 
     if (senderEmail == NULL || receiverEmail == NULL) // Check for Null values
