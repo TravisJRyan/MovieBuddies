@@ -5,7 +5,7 @@ const request = require('request'); // HTTP request module
 const axios = require('axios'); // Used for Promises
 app.set("view engine", "pug"); // have the server use Pug to render pages
 
-const secretVars = JSON.parse(fs.readFileSync('secret.json', 'utf8')); // import secret vars
+/*const secretVars = JSON.parse(fs.readFileSync('secret.json', 'utf8')); // import secret vars
 
 // Connection Object for MySQL
 const db = mysql.createConnection({
@@ -13,7 +13,7 @@ const db = mysql.createConnection({
     user: secretVars[0]["user"],
     password: secretVars[0]["password"],
     database: secretVars[0]["database"]
-});
+});*/
 
 // Helper Classes
 const accountHelper = require("./helperClasses/accountHelper");
