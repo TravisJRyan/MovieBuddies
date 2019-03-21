@@ -15,7 +15,11 @@ module.exports.createAccount = function(first,last,email,password){
         email+"','"+password+"','"+first+"','"+last+"');";
 
     let newUserQuery = DB.newUserQuery(newUserSQL, (err, results) => {    
-        if (err) throw error;
+        if (err) {
+            console.log(err);
+            return false;
+        } 
+        return true;
     });
     return true;
 }
