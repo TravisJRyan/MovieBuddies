@@ -3,16 +3,18 @@ const app = express(); // init Express server as a variable
 const session = require('express-session'); // Manages session variables
 const request = require('request'); // HTTP request module
 const axios = require('axios'); // Used for Promises
+const fs = require ('fs'); // file system
+const mysql = require('mysql'); // MySQL
 app.set("view engine", "pug"); // have the server use Pug to render pages
 
 const secretVars = JSON.parse(fs.readFileSync('secret.json', 'utf8')); // import secret vars
 
 // Connection Object for MySQL
 const db = mysql.createConnection({
-    host: secretVars[0]["host"],
-    user: secretVars[0]["user"],
-    password: secretVars[0]["password"],
-    database: secretVars[0]["database"]
+    host: secretVars["host"],
+    user: secretVars["user"],
+    password: secretVars["password"],
+    database: secretVars["database"]
 });
 
 // Helper Classes
