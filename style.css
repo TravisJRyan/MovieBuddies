@@ -1,3 +1,5 @@
 a:hover{
-    background-color: gray;
+    background-color: #808080;
+    border-radius: 2px;
+    padding: 5px;
 }

@@ -4,11 +4,14 @@ head
 body
     nav.navbar.navbar-expand-lg.navbar-dark.bg-dark
         a.navbar-brand(href='/') MovieBuddies
+        a.navbar-brand(href='/') Movies Rated
+        a.navbar-brand(href='/') View Recommendations
+        a.navbar-brand(href='/') Sign-Out
         button.navbar-toggler(type='button', data-toggle='collapse', data-target='#navbarSupportedContent', aria-controls='navbarSupportedContent', aria-expanded='false', aria-label='Toggle navigation')
             span.navbar-toggler-icon
         #navbarSupportedContent.collapse.navbar-collapse
-            form.form-inline.my-2.my-lg-0(action="/search")
-                input.form-control.mr-sm-2(placeholder='Search', class="form-control" aria-label='Search', name="searchTerm")
+            form.form-inline.my-2.my-lg-0.ml-lg-5(action="/search")
+                input.form-control.mr-sm-2.ml-lg-5(placeholder='Search', class="form-control" aria-label='Search', name="searchTerm")
                 button.btn.btn-outline-success.my-2.my-sm-0(type='submit') Search
     
     h3 TODO: THIS PAGE STILL NEEDS TO BE MADE
