@@ -7,7 +7,7 @@ const fs = require ('fs'); // file system
 const mysql = require('mysql'); // MySQL
 app.set("view engine", "pug"); // have the server use Pug to render pages
 
-/*const secretVars = JSON.parse(fs.readFileSync('secret.json', 'utf8')); // import secret vars
+/*const secretVars = JSON.parse(fs.readFileSync('secret.json', 'utf8'));*/ // import secret vars
 
 // Connection Object for MySQL
 const db = mysql.createConnection({
@@ -21,7 +21,7 @@ const db = mysql.createConnection({
 const accountHelper = require("./helperClasses/accountHelper");
 const dataHelper = require("./helperClasses/dataHelper");
 
-// Start server listening at port 3000 (localhost:3000)
+//Start server listening at port 3000 (localhost:3000)
 app.listen("3000", () => {
     console.log("Server started on port 3000...");
 });
