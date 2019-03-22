@@ -7,7 +7,7 @@ const fs = require ('fs'); // file system
 const mysql = require('mysql'); // MySQL
 app.set("view engine", "pug"); // have the server use Pug to render pages
 
-/*const secretVars = JSON.parse(fs.readFileSync('secret.json', 'utf8'));*/ // import secret vars
+/*const secretVars = JSON.parse(fs.readFileSync('secret.json', 'utf8')); // import secret vars
 
 // Connection Object for MySQL
 const db = mysql.createConnection({
@@ -15,7 +15,7 @@ const db = mysql.createConnection({
     user: secretVars["user"],
     password: secretVars["password"],
     database: secretVars["database"]
-});
+});*/
 
 // Helper Classes
 const accountHelper = require("./helperClasses/accountHelper");
@@ -156,15 +156,24 @@ app.get("/404", function(req,res){
 
 //Route to userPage
 app.get("/userPage", function(req, res){
-    var title="aquaman";
-    request('https://www.omdbapi.com/?t='+title+'&apikey=b09eb4ff', function(error,response, body){
-        var image = JSON.parse(body)["Poster"];
-        var title = JSON.parse(body)["Title"];
-        res.render("userPage",{
-            imagedata: image,
-            titledata: title
+    var titles = ["aquaman", "glass", "shriek", "batman", "captain america"];
+    var requestNumber = titles.length;
+    var requestComplete = 0;
+    var counter = 0;
+    for(let i = 0; i < requestNumber; i++){
+        request('https://www.omdbapi.com/?t='+titles[counter]+'&apikey=b09eb4ff', function(error,response, body){
+            counter++;
+            requestComplete++;
+            var image = JSON.parse(body)["Poster"];
+            var title = JSON.parse(body)["Title"];
+            if(requestComplete == requestNumber){
+                res.render("userPage",{
+                    imagedata: image,
+                    titledata: title
+                });
+            }
         });
-    });  
+    } 
 });
 
 // Redirect unknown routes to 404 page
