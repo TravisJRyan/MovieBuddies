@@ -11,19 +11,11 @@ app.set("view engine", "pug"); // have the server use Pug to render pages
 
 // Connection Object for MySQL
 const db = mysql.createConnection({
-<<<<<<< HEAD
-    host: secretVars[0]["host"],
-    user: secretVars[0]["user"],
-    password: secretVars[0]["password"],
-    database: secretVars[0]["database"]
-});*/
-=======
     host: secretVars["host"],
     user: secretVars["user"],
     password: secretVars["password"],
     database: secretVars["database"]
 });
->>>>>>> 670fe87deb32c3023decf0729d0aa0463f531f1d
 
 // Helper Classes
 const accountHelper = require("./helperClasses/accountHelper");
