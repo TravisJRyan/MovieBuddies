@@ -127,7 +127,15 @@ app.get("/movie", function(req,res){
                 movie : dataBlock
             });
         } else {
-            res.send("We do not have data about that movie.");
+            request('https://www.omdbapi.com/?i='+movieId+'&apikey=b09eb4ff', function(error,response, body){
+                if(JSON.parse(body)["Response"]=="False")
+                    res.send("No movie was found for that ID.");
+                else{
+                    res.render("movie",{
+                        movie: JSON.parse(body)
+                    });
+                }
+            });
         }
     } else {
         res.send("Please supply a movie ID");
