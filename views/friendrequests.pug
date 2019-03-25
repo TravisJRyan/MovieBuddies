@@ -17,7 +17,18 @@ body
             form.form-inline.my-2.my-lg-0.ml-lg-5(action="/search")
                 input.form-control.ml-lg-4(placeholder='Search', class="form-control" aria-label='Search', name="searchTerm")
                 button.btn.btn-outline-success.my-2.my-sm-0.ml-sm-2(type='submit') Search
-    
+    br
+    .container
+        h3="Friend Requests ("+friendRequests.length+")"
+        table.table.table-striped
+            tbody
+                for friendRequest in friendRequests
+                        tr
+                            td(style="font-size: 15px;")
+                                h4=friendRequest
+                                button.btn-primary Accept
+                                button.btn-danger Reject
+
     // Import JQuery, Popper, and Bootstrap Javascript files
     script(src='https://code.jquery.com/jquery-3.2.1.slim.min.js' integrity='sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN' crossorigin='anonymous')
     script(src='https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js' integrity='sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q' crossorigin='anonymous')

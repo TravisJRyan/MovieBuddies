@@ -16,9 +16,9 @@ body
         tbody
             for result in searchResults
                     tr
-                        td
+                        td(style="font-size: 20px;")
                             img(src=result["Poster"] height=150 width=100)
-                            a(href="/movie?id="+result["imdbID"])=result["Title"]
+                            a(href="/movie?id="+result["imdbID"])="\t"+result["Title"]
 
     // Import JQuery, Popper, and Bootstrap Javascript files
     script(src='https://code.jquery.com/jquery-3.2.1.slim.min.js' integrity='sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN' crossorigin='anonymous')

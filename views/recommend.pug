@@ -13,7 +13,19 @@ body
     
     .container
         br
-        h2 Recommendations
+        h3 Recommendations
+        hr
+        h4 Let us find the perfect movie for you. Choose your settings and get started!
+        form
+            .form-group
+                label(for='ratingSelect') Rating Threshold (The highest rating you wish to receive.)
+                select#exampleFormControlSelect1.form-control
+                    option G
+                    option PG
+                    option PG-13
+                    option R
+                    option Unrated (No Restriction)
+        button.btn-large.btn-success Get Started!
 
     // Import JQuery, Popper, and Bootstrap Javascript files
     script(src='https://code.jquery.com/jquery-3.2.1.slim.min.js' integrity='sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN' crossorigin='anonymous')

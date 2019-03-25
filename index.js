@@ -46,7 +46,10 @@ app.use(
 // POST operation for logging in
 app.post("/login", function(req,res){
     accountHelper.validate(req.body.email, req.body.password, function(result){
-        use(result);
+        if(result){ // successful login
+            req.session.email = req.body.email; // set login for session
+            res.redirect("/"); // redirect to dashboard
+        }
     });
 });
 
@@ -55,21 +58,6 @@ app.post("/logout", function(req,res){
     req.session.destroy(); // destroy session
     res.redirect("/"); // redirect to login page
 });
-
-// Route for the home page
-app.get("/mystuff", function(req, res){
-    // ask database for users ratings
-    var databaseResult = accountHelper.getRatings("blablah@gmail.com");
-    var userRatingsInfo = {};
-    for(var i = 0; i < databaseResult.length; i++){
-        var apiResult = ""; // hit api and get movie title, photo, etc.
-        userRatingsInfo.add(apiResult);
-    }
-    res.render("test", {
-        myvar : databaseResult
-    }); // Render the pug file "test"
-});
-
 
 app.get("/anothertest", function(req, res){
     //hit API
@@ -87,7 +75,12 @@ app.get("/anothertest", function(req, res){
 
 // Route for home page
 app.get("/", function(req, res){
-    res.render("login"); // TODO
+    if(!req.session.email)
+        res.render("login");
+    else
+        res.render("dashboard",{
+            userEmail : req.session.email
+        });
 });
 
 // Search results page
@@ -143,12 +136,15 @@ app.get("/settings", function(req,res){
 
 // About Us page
 app.get("/about", function(req,res){
-    res.render("about"); // TODO
+    res.render("about");
 });
 
 // Browse friend requests page
 app.get("/friendrequests", function(req,res){
-    res.render("friendrequests"); // TODO
+    var friendRequests = ["travis@gmail.com", "terry@gmail.com", "mary@gmail.com"];
+    res.render("friendrequests",{
+        friendRequests: friendRequests
+    });
 });
 
 // Movie recommendation page
