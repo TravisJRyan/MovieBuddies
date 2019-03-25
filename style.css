@@ -1,5 +1,8 @@
 a:hover{
-    background-color: #808080;
-    border-radius: 2px;
-    padding: 5px;
+    background-color: #A71D31;
+    border-radius: 10px;
+}
+
+li{
+    padding-right: 15px;
 }

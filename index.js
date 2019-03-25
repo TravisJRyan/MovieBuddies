@@ -21,7 +21,7 @@ const db = mysql.createConnection({
 const accountHelper = require("./helperClasses/accountHelper");
 const dataHelper = require("./helperClasses/dataHelper");
 
-// Start server listening at port 3000 (localhost:3000)
+//Start server listening at port 3000 (localhost:3000)
 app.listen("3000", () => {
     console.log("Server started on port 3000...");
 });
@@ -156,15 +156,24 @@ app.get("/404", function(req,res){
 
 //Route to userPage
 app.get("/userPage", function(req, res){
-    var title="aquaman";
-    request('https://www.omdbapi.com/?t='+title+'&apikey=b09eb4ff', function(error,response, body){
-        var image = JSON.parse(body)["Poster"];
-        var title = JSON.parse(body)["Title"];
-        res.render("userPage",{
-            imagedata: image,
-            titledata: title
+    var titles = ["aquaman", "glass", "shriek", "batman", "captain america"];
+    var requestNumber = titles.length;
+    var requestComplete = 0;
+    var counter = 0;
+    for(let i = 0; i < requestNumber; i++){
+        request('https://www.omdbapi.com/?t='+titles[counter]+'&apikey=b09eb4ff', function(error,response, body){
+            counter++;
+            requestComplete++;
+            var image = JSON.parse(body)["Poster"];
+            var title = JSON.parse(body)["Title"];
+            if(requestComplete == requestNumber){
+                res.render("userPage",{
+                    imagedata: image,
+                    titledata: title
+                });
+            }
         });
-    });  
+    } 
 });
 
 // Redirect unknown routes to 404 page

@@ -22,3 +22,24 @@ module.exports.addRating = function(email, movieID, rating){
 
     return true;
 }
+
+//TODO: TESTING
+// function returns movie IDs and ratings for all ratings of a given user
+module.exports.getRatings = function(email){
+    if (email == NULL)
+        return null;
+    let selectRatingSQL = "SELECT movieID, rating FROM ratings WHERE email='" + email + "';";
+
+    let selectRatingQuery = DB.selectRatingQuery(selectRatingSQL, (err, results) => {
+        if (err) throw err;
+
+        if (results[0] == undefined)
+            res.render('404');
+        else // return email and ratings object
+            return {
+                "email" : email,
+                "ratings" : results
+            };
+    });
+    return null;
+}
