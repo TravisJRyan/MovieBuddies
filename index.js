@@ -85,27 +85,6 @@ app.get("/anothertest", function(req, res){
     });
 });
 
-/* ASYNCHRONOUS EXAMPLE
- app.get("/anothertest", function(req, res){
-    //hit API
-    var movieTitles = [1, 2, 3, 4, 5]
-    var numberOfRequests = movieTitles.length;
-    var requestsFinished = 0;
-    var data = {};
-    for(var i = 0; i < numberOfRequests; i++){
-        request('https://www.omdbapi.com/?t='+title+'&apikey=b09eb4ff', function (error, response, body) {
-            requestsFinished++;
-            data += body;
-            if(requestsFinished==numberOfRequests){
-                res.render("userPage", {
-                    data: data
-                });
-            }
-        });
-    }
-    done = false;
-}); */
-
 // Route for home page
 app.get("/", function(req, res){
     res.render("login"); // TODO
@@ -113,7 +92,17 @@ app.get("/", function(req, res){
 
 // Search results page
 app.get("/search", function(req,res){
-    res.render("search"); // TODO
+    if(req.query.searchTerm){
+        request('https://www.omdbapi.com/?s='+req.query.searchTerm+'&apikey=b09eb4ff', function(error,response,body){
+            res.render("search", {
+                searchTerm : req.query.searchTerm,
+                searchResults: JSON.parse(body)["Search"]
+            });
+        });
+    } else{
+        res.send("Please provide a search term.")
+    }
+    
 });
 
 // Movie page
@@ -200,5 +189,3 @@ app.get("/userPage", function(req, res){
 app.get("/*", function(req, res){
     res.redirect("/404");
 });
-
-// Colors #3F0D12 #A71D31 #F2F1CD
