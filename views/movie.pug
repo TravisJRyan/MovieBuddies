@@ -13,7 +13,12 @@ body
     
     .container
         br
-        h2 Movie Title
+        h2=movie["Title"]
+        img(src=movie["Poster"] height=300 width=200)
+        br
+        p=movie["Plot"]
+        h5="Director: "+movie["Director"]
+        h5="Genre: "+movie["Genres"]
 
     // Import JQuery, Popper, and Bootstrap Javascript files
     script(src='https://code.jquery.com/jquery-3.2.1.slim.min.js' integrity='sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN' crossorigin='anonymous')

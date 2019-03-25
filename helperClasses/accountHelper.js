@@ -5,7 +5,7 @@ module.exports.authenticate = function(email, password){
 
 //TODO: TESTING
 // function processes a new account creation
-module.exports.createAccount = function(first,last,email,password){
+module.exports.createAccount = function(first,last,email,password,callback){
     // return false if null values
     if (first == NULL || last == NULL || email == NULL || password == NULL)
         return false;
@@ -17,11 +17,11 @@ module.exports.createAccount = function(first,last,email,password){
     let newUserQuery = DB.newUserQuery(newUserSQL, (err, results) => {    
         if (err) {
             console.log(err);
-            return false;
-        } 
-        return true;
+            callback(false);
+        }
+        callback(true);
     });
-    return true;
+    callback(false);
 }
 
 //TODO: TESTING

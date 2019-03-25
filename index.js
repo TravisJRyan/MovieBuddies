@@ -45,12 +45,9 @@ app.use(
  
 // POST operation for logging in
 app.post("/login", function(req,res){
-    if(accountHelper.validate(req.body.email, req.body.password)){
-        req.session.email=req.body.email; // log in with session data
-        res.redirect("/"); // redirect to landing page
-    } else{
-        res.redirect("/"); // failure logging in, refresh without login
-    }
+    accountHelper.validate(req.body.email, req.body.password, function(result){
+        use(result);
+    });
 });
 
 // POST operation for logging out
@@ -121,7 +118,20 @@ app.get("/search", function(req,res){
 
 // Movie page
 app.get("/movie", function(req,res){
-    res.render("movie"); // TODO
+    if(req.query.id){
+        var movieId = req.query.id;
+        let movieData = JSON.parse(fs.readFileSync('ML/movieData.json', 'utf8'));
+        if(movieData.hasOwnProperty(movieId)){
+            var dataBlock = movieData[movieId];
+            res.render("movie", {
+                movie : dataBlock
+            });
+        } else {
+            res.send("We do not have data about that movie.");
+        }
+    } else {
+        res.send("Please supply a movie ID");
+    }
 });
 
 // User account page
