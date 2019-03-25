@@ -156,20 +156,22 @@ app.get("/404", function(req,res){
 
 //Route to userPage
 app.get("/userPage", function(req, res){
-    var titles = ["aquaman", "glass", "shriek", "batman", "captain america"];
+    var titles = ["aquaman", "glass", "shrek", "batman", "captain america"];
     var requestNumber = titles.length;
     var requestComplete = 0;
-    var counter = 0;
+    var movies = []; // an array of length-2 arrays
     for(let i = 0; i < requestNumber; i++){
-        request('https://www.omdbapi.com/?t='+titles[counter]+'&apikey=b09eb4ff', function(error,response, body){
-            counter++;
+        request('https://www.omdbapi.com/?t='+titles[i]+'&apikey=b09eb4ff', function(error,response, body){
             requestComplete++;
             var image = JSON.parse(body)["Poster"];
             var title = JSON.parse(body)["Title"];
-            if(requestComplete == requestNumber){
+            var id = JSON.parse(body)["imdbID"];
+            console.log(id);
+            var movie = [image, title, id];
+            movies.push(movie); // push image/title (length 2 array) to movies array
+            if(requestComplete == requestNumber){ // all requests complete
                 res.render("userPage",{
-                    imagedata: image,
-                    titledata: title
+                    movies : movies // render page with movies data
                 });
             }
         });
