@@ -7,7 +7,7 @@ const fs = require ('fs'); // file system
 const mysql = require('mysql'); // MySQL
 app.set("view engine", "pug"); // have the server use Pug to render pages
 
-/*const secretVars = JSON.parse(fs.readFileSync('secret.json', 'utf8')); // import secret vars
+const secretVars = JSON.parse(fs.readFileSync('secret.json', 'utf8')); // import secret vars
 
 // Connection Object for MySQL
 const db = mysql.createConnection({
@@ -15,7 +15,7 @@ const db = mysql.createConnection({
     user: secretVars["user"],
     password: secretVars["password"],
     database: secretVars["database"]
-});*/
+});
 
 // Helper Classes
 const accountHelper = require("./helperClasses/accountHelper");
