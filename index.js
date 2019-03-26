@@ -141,7 +141,9 @@ app.get("/about", function(req,res){
 
 // Browse friend requests page
 app.get("/friendrequests", function(req,res){
-    res.render("friendrequests"); // TODO
+    accountHelper.getFriendRequest(req.session.email,function(result){
+        res.render("friendrequests"); // TODO
+    });
 });
 
 // Movie recommendation page
