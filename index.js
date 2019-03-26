@@ -156,14 +156,9 @@ app.get("/about", function(req,res){
 
 // Browse friend requests page
 app.get("/friendrequests", function(req,res){
-<<<<<<< HEAD
-    accountHelper.getFriendRequest(req.session.email,function(result){
-        res.render("friendrequests"); // TODO
-=======
     var friendRequests = ["travis@gmail.com", "terry@gmail.com", "mary@gmail.com"];
     res.render("friendrequests",{
         friendRequests: friendRequests
->>>>>>> 0d5b19bbcb733cce2ac9bf11de633e5c0ef7b47c
     });
 });
 

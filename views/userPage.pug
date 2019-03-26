@@ -12,15 +12,19 @@ nav.navbar.navbar-expand-lg.navbar-dark.bg-dark
         button.navbar-toggler(type='button', data-toggle='collapse', data-target='#navbarSupportedContent', aria-controls='navbarSupportedContent', aria-expanded='false', aria-label='Toggle navigation')
             span.navbar-toggler-icon
         #navbarSupportedContent.collapse.navbar-collapse
+            a#logoLink.navbar-brand(href='/userPage') MovieBuddies
+              //- img#logoImage(src='img/cat.jpg' alt='')
             ul.navbar-nav.mr-auto
-              li
-                a.navbar-brand(href='/') View Friend Request
-              li
+              li.customLinks
+                a.navbar-brand(href='/friendrequests') View Friend Request
+              li.customLinks
                 a.navbar-brand(href='/') Movies Rated
-              li
-                a.navbar-brand(href='/') View Recommendations
-              li            
-                a.navbar-brand(href='/') Sign-Out
+              li.customLinks
+                a.navbar-brand(href='/settings') Profile Settings  
+              li.customLinks
+                a.navbar-brand(href='/recommend') View Recommendations
+              li.customLinks           
+                a.navbar-brand(href='/logout') Logout
             form.form-inline.my-2.my-lg-0.ml-lg-5(action="/search")
                 input.form-control.ml-lg-4(placeholder='Search', class="form-control" aria-label='Search', name="searchTerm")
                 button.btn.btn-outline-success.my-2.my-sm-0.ml-sm-2(type='submit') Search
