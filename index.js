@@ -4,18 +4,11 @@ const session = require('express-session'); // Manages session variables
 const request = require('request'); // HTTP request module
 const axios = require('axios'); // Used for Promises
 const fs = require ('fs'); // file system
-const mysql = require('mysql'); // MySQL
+const bodyParser = require('body-parser'); // for receving POST bodies
 app.set("view engine", "pug"); // have the server use Pug to render pages
 
+// Read local secret vars (Git ignored)
 const secretVars = JSON.parse(fs.readFileSync('secret.json', 'utf8')); // import secret vars
-
-// Connection Object for MySQL
-const db = mysql.createConnection({
-    host: secretVars["host"],
-    user: secretVars["user"],
-    password: secretVars["password"],
-    database: secretVars["database"]
-});
 
 // Helper Classes
 const accountHelper = require("./helperClasses/accountHelper");
@@ -42,45 +35,67 @@ app.use(
         }
     })
 );
+
+// Use Body Parser module for POST operation response blocks
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({
+    extended: true
+}));
  
 // POST operation for logging in
 app.post("/login", function(req,res){
-    accountHelper.validate(req.body.email, req.body.password, function(result){
-        if(result){ // successful login
+    accountHelper.authenticate(req.body.email, req.body.password, function(results){
+        if(results.length==0){
+            res.redirect("/login?loginFailure=true");
+        }
+        else{ // successful login
             req.session.email = req.body.email; // set login for session
-            res.redirect("/"); // redirect to dashboard
+            res.redirect("/userPage"); // redirect to dashboard
         }
     });
 });
 
-// POST operation for logging out
-app.post("/logout", function(req,res){
+// POST operation for registering
+app.post("/register", function(req,res){
+    if(req.body.first && req.body.last && req.body.email && req.body.password){
+        accountHelper.createAccount(req.body.first, req.body.last, req.body.email, req.body.password, function(result){
+            if(result){
+                req.session.email=req.body.email;
+                res.redirect("/");
+            } else{
+                res.send("Failed to register.");
+            }
+        });
+    } else{
+        res.send("Please supply all fields for registration")
+    }
+});
+
+// operation for logging out
+app.get("/logout", function(req,res){
     req.session.destroy(); // destroy session
     res.redirect("/"); // redirect to login page
 });
 
-app.get("/anothertest", function(req, res){
-    //hit API
-    var title="aquaman";
-    axios.get('https://www.omdbapi.com/?t='+title+'&apikey=b09eb4ff', function (error, response, body) {
-        console.log(body);
-        var image=JSON.parse(body)["Poster"];
-        var title=JSON.parse(body)["Title"];
-        res.render("userPage", {
-            imagedata: image, 
-            titledata: title
+// Login page
+app.get("/login", function(req,res){
+    if(req.query.loginFailure && req.query.loginFailure=="true"){
+        res.render("login", {
+            loginFailure: true
         });
-    });
+    } else{
+        res.render("login", {
+           loginFailure: false 
+        });
+    }
 });
 
 // Route for home page
 app.get("/", function(req, res){
     if(!req.session.email)
-        res.render("login");
+        res.redirect("login");
     else
-        res.render("dashboard",{
-            userEmail : req.session.email
-        });
+        res.redirect("userPage");
 });
 
 // Search results page
@@ -169,7 +184,6 @@ app.get("/userPage", function(req, res){
             var image = JSON.parse(body)["Poster"];
             var title = JSON.parse(body)["Title"];
             var id = JSON.parse(body)["imdbID"];
-            console.log(id);
             var movie = [image, title, id];
             movies.push(movie); // push image/title (length 2 array) to movies array
             if(requestComplete == requestNumber){ // all requests complete
