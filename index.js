@@ -4,18 +4,11 @@ const session = require('express-session'); // Manages session variables
 const request = require('request'); // HTTP request module
 const axios = require('axios'); // Used for Promises
 const fs = require ('fs'); // file system
-const mysql = require('mysql'); // MySQL
+const bodyParser = require('body-parser'); // for receving POST bodies
 app.set("view engine", "pug"); // have the server use Pug to render pages
 
+// Read local secret vars (Git ignored)
 const secretVars = JSON.parse(fs.readFileSync('secret.json', 'utf8')); // import secret vars
-
-// Connection Object for MySQL
-const db = mysql.createConnection({
-    host: secretVars["host"],
-    user: secretVars["user"],
-    password: secretVars["password"],
-    database: secretVars["database"]
-});
 
 // Helper Classes
 const accountHelper = require("./helperClasses/accountHelper");
@@ -42,86 +35,108 @@ app.use(
         }
     })
 );
+
+// Use Body Parser module for POST operation response blocks
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({
+    extended: true
+}));
  
 // POST operation for logging in
 app.post("/login", function(req,res){
-    if(accountHelper.validate(req.body.email, req.body.password)){
-        req.session.email=req.body.email; // log in with session data
-        res.redirect("/"); // redirect to landing page
+    accountHelper.authenticate(req.body.email, req.body.password, function(results){
+        if(results.length==0){
+            res.redirect("/login?loginFailure=true");
+        }
+        else{ // successful login
+            req.session.email = req.body.email; // set login for session
+            res.redirect("/userPage"); // redirect to dashboard
+        }
+    });
+});
+
+// POST operation for registering
+app.post("/register", function(req,res){
+    if(req.body.first && req.body.last && req.body.email && req.body.password){
+        accountHelper.createAccount(req.body.first, req.body.last, req.body.email, req.body.password, function(result){
+            if(result){
+                req.session.email=req.body.email;
+                res.redirect("/");
+            } else{
+                res.send("Failed to register.");
+            }
+        });
     } else{
-        res.redirect("/"); // failure logging in, refresh without login
+        res.send("Please supply all fields for registration")
     }
 });
 
-// POST operation for logging out
-app.post("/logout", function(req,res){
+// operation for logging out
+app.get("/logout", function(req,res){
     req.session.destroy(); // destroy session
     res.redirect("/"); // redirect to login page
 });
 
-// Route for the home page
-app.get("/mystuff", function(req, res){
-    // ask database for users ratings
-    var databaseResult = accountHelper.getRatings("blablah@gmail.com");
-    var userRatingsInfo = {};
-    for(var i = 0; i < databaseResult.length; i++){
-        var apiResult = ""; // hit api and get movie title, photo, etc.
-        userRatingsInfo.add(apiResult);
-    }
-    res.render("test", {
-        myvar : databaseResult
-    }); // Render the pug file "test"
-});
-
-
-app.get("/anothertest", function(req, res){
-    //hit API
-    var title="aquaman";
-    axios.get('https://www.omdbapi.com/?t='+title+'&apikey=b09eb4ff', function (error, response, body) {
-        console.log(body);
-        var image=JSON.parse(body)["Poster"];
-        var title=JSON.parse(body)["Title"];
-        res.render("userPage", {
-            imagedata: image, 
-            titledata: title
+// Login page
+app.get("/login", function(req,res){
+    if(req.query.loginFailure && req.query.loginFailure=="true"){
+        res.render("login", {
+            loginFailure: true
         });
-    });
-});
-
-/* ASYNCHRONOUS EXAMPLE
- app.get("/anothertest", function(req, res){
-    //hit API
-    var movieTitles = [1, 2, 3, 4, 5]
-    var numberOfRequests = movieTitles.length;
-    var requestsFinished = 0;
-    var data = {};
-    for(var i = 0; i < numberOfRequests; i++){
-        request('https://www.omdbapi.com/?t='+title+'&apikey=b09eb4ff', function (error, response, body) {
-            requestsFinished++;
-            data += body;
-            if(requestsFinished==numberOfRequests){
-                res.render("userPage", {
-                    data: data
-                });
-            }
+    } else{
+        res.render("login", {
+           loginFailure: false 
         });
     }
-    done = false;
-}); */
+});
 
 // Route for home page
 app.get("/", function(req, res){
-    res.render("login"); // TODO
+    if(!req.session.email)
+        res.redirect("login");
+    else
+        res.redirect("userPage");
 });
 
 // Search results page
 app.get("/search", function(req,res){
-    res.render("search"); // TODO
+    if(req.query.searchTerm){
+        request('https://www.omdbapi.com/?s='+req.query.searchTerm+'&apikey=b09eb4ff', function(error,response,body){
+            res.render("search", {
+                searchTerm : req.query.searchTerm,
+                searchResults: JSON.parse(body)["Search"]
+            });
+        });
+    } else{
+        res.send("Please provide a search term.")
+    }
+    
 });
 
 // Movie page
 app.get("/movie", function(req,res){
-    res.render("movie"); // TODO
+    if(req.query.id){
+        var movieId = req.query.id;
+        let movieData = JSON.parse(fs.readFileSync('ML/movieData.json', 'utf8'));
+        if(movieData.hasOwnProperty(movieId)){
+            var dataBlock = movieData[movieId];
+            res.render("movie", {
+                movie : dataBlock
+            });
+        } else {
+            request('https://www.omdbapi.com/?i='+movieId+'&apikey=b09eb4ff', function(error,response, body){
+                if(JSON.parse(body)["Response"]=="False")
+                    res.send("No movie was found for that ID.");
+                else{
+                    res.render("movie",{
+                        movie: JSON.parse(body)
+                    });
+                }
+            });
+        }
+    } else {
+        res.send("Please supply a movie ID");
+    }
 });
 
 // User account page
@@ -136,13 +151,19 @@ app.get("/settings", function(req,res){
 
 // About Us page
 app.get("/about", function(req,res){
-    res.render("about"); // TODO
+    res.render("about");
 });
 
 // Browse friend requests page
 app.get("/friendrequests", function(req,res){
+<<<<<<< HEAD
     accountHelper.getFriendRequest(req.session.email,function(result){
         res.render("friendrequests"); // TODO
+=======
+    var friendRequests = ["travis@gmail.com", "terry@gmail.com", "mary@gmail.com"];
+    res.render("friendrequests",{
+        friendRequests: friendRequests
+>>>>>>> 0d5b19bbcb733cce2ac9bf11de633e5c0ef7b47c
     });
 });
 
@@ -168,7 +189,6 @@ app.get("/userPage", function(req, res){
             var image = JSON.parse(body)["Poster"];
             var title = JSON.parse(body)["Title"];
             var id = JSON.parse(body)["imdbID"];
-            console.log(id);
             var movie = [image, title, id];
             movies.push(movie); // push image/title (length 2 array) to movies array
             if(requestComplete == requestNumber){ // all requests complete
@@ -184,5 +204,3 @@ app.get("/userPage", function(req, res){
 app.get("/*", function(req, res){
     res.redirect("/404");
 });
-
-// Colors #3F0D12 #A71D31 #F2F1CD
