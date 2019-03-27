@@ -15,16 +15,32 @@ body
         br
         h3 Recommendations
         hr
-        h4 Let us find the perfect movie for you. Choose your settings and get started!
+        h4 Let us find the perfect movie for you.
+        p Check which MPAA ratings you wish to receive.
         form
             .form-group
-                label(for='ratingSelect') Rating Threshold (The highest rating you wish to receive.)
-                select#exampleFormControlSelect1.form-control
-                    option G
-                    option PG
-                    option PG-13
-                    option R
-                    option Unrated (No Restriction)
+                .form-check
+                    input#gRatingCheckbox.form-check-input(type='checkbox', value='', checked)
+                    label.form-check-label(for='gRatingCheckbox')
+                    |   G
+                .form-check
+                    input#pgRatingCheckbox.form-check-input(type='checkbox', value='', checked)
+                    label.form-check-label(for='pgRatingCheckbox')
+                    |   PG
+                .form-check
+                    input#pg13RatingCheckbox.form-check-input(type='checkbox', value='', checked)
+                    label.form-check-label(for='pg13RatingCheckbox')
+                    |   PG-13
+                .form-check
+                    input#rRatingCheckbox.form-check-input(type='checkbox', value='', checked)
+                    label.form-check-label(for='rRatingCheckbox')
+                    |   R
+                .form-check
+                    input#unratedRatingCheckbox.form-check-input(type='checkbox', value='', checked)
+                    label.form-check-label(for='unratedRatingCheckbox')
+                    |   Unrated / Other
+                
+
         button.btn-large.btn-success Get Started!
 
     // Import JQuery, Popper, and Bootstrap Javascript files
