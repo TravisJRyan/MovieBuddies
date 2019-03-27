@@ -1,4 +1,4 @@
-a:hover{
+.customLinks a:hover{
     background-color: #A71D31;
     border-radius: 10px;
 }
@@ -19,3 +19,11 @@ li{
 #logoLink:hover{
     background-color: transparent;
 }
+
+.my-custom-scrollbar {
+    height: 600px;
+    overflow: auto;
+  }
+  .table-wrapper-scroll-y {
+    display: block;
+  }
