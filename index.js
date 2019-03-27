@@ -3,7 +3,7 @@ const app = express(); // init Express server as a variable
 const session = require('express-session'); // Manages session variables
 const request = require('request'); // HTTP request module
 const axios = require('axios'); // Used for Promises
-const fs = require ('fs'); // file system
+const fs = require('fs'); // file system
 const bodyParser = require('body-parser'); // for receving POST bodies
 app.set("view engine", "pug"); // have the server use Pug to render pages
 
@@ -41,161 +41,185 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({
     extended: true
 }));
- 
+
 // POST operation for logging in
-app.post("/login", function(req,res){
-    accountHelper.authenticate(req.body.email, req.body.password, function(results){
-        if(results.length==0){
-            res.redirect("/login?loginFailure=true");
-        }
-        else{ // successful login
-            req.session.email = req.body.email; // set login for session
-            res.redirect("/userPage"); // redirect to dashboard
-        }
-    });
+app.post("/login", function (req, res) {
+    if(req.session.email) // if already logged in, do not perform operation
+        res.redirect("/");
+    else{
+        accountHelper.authenticate(req.body.email, req.body.password, function (results) {
+            if (results.length == 0) {
+                res.redirect("/login?loginFailure=true");
+            }
+            else { // successful login
+                req.session.email = req.body.email; // set login for session
+                res.redirect("/userPage"); // redirect to dashboard
+            }
+        });
+    }
 });
 
 // POST operation for registering
-app.post("/register", function(req,res){
-    if(req.body.first && req.body.last && req.body.email && req.body.password){
-        accountHelper.createAccount(req.body.first, req.body.last, req.body.email, req.body.password, function(result){
-            if(result){
-                req.session.email=req.body.email;
+app.post("/register", function (req, res) {
+    if (req.session.email) // if already logged in, do not perform operation
+        res.redirect("/");
+    else if (req.body.first && req.body.last && req.body.email && req.body.password) {
+        accountHelper.createAccount(req.body.first, req.body.last, req.body.email, req.body.password, function (result) {
+            if (result) {
+                req.session.email = req.body.email;
                 res.redirect("/");
-            } else{
+            } else {
                 res.send("Failed to register.");
             }
         });
-    } else{
+    } else {
         res.send("Please supply all fields for registration")
     }
 });
 
 // operation for logging out
-app.get("/logout", function(req,res){
+app.get("/logout", function (req, res) {
     req.session.destroy(); // destroy session
     res.redirect("/"); // redirect to login page
 });
 
 // Login page
-app.get("/login", function(req,res){
-    if(req.query.loginFailure && req.query.loginFailure=="true"){
+app.get("/login", function (req, res) {
+    if(req.session.username)
+        res.redirect("/");
+    else if (req.query.loginFailure && req.query.loginFailure == "true") {
         res.render("login", {
             loginFailure: true
         });
-    } else{
+    } else {
         res.render("login", {
-           loginFailure: false 
+            loginFailure: false
         });
     }
 });
 
 // Route for home page
-app.get("/", function(req, res){
-    if(!req.session.email)
+app.get("/", function (req, res) {
+    if (!req.session.email)
         res.redirect("login");
     else
         res.redirect("userPage");
 });
 
 // Search results page
-app.get("/search", function(req,res){
-    if(req.query.searchTerm){
-        request('https://www.omdbapi.com/?s='+req.query.searchTerm+'&apikey=b09eb4ff', function(error,response,body){
-            res.render("search", {
-                searchTerm : req.query.searchTerm,
-                searchResults: JSON.parse(body)["Search"]
+app.get("/search", function (req, res) {
+    //validateLoggedIn(req, res, function(){
+        if (req.query.searchTerm) {
+            request('https://www.omdbapi.com/?s=' + req.query.searchTerm + '&apikey=b09eb4ff', function (error, response, body) {
+                res.render("search", {
+                    searchTerm: req.query.searchTerm,
+                    searchResults: JSON.parse(body)["Search"]
+                });
             });
-        });
-    } else{
-        res.send("Please provide a search term.")
-    }
-    
+        } else {
+            res.send("Please provide a search term.")
+        }
+    //});
 });
 
 // Movie page
-app.get("/movie", function(req,res){
-    if(req.query.id){
-        var movieId = req.query.id;
-        let movieData = JSON.parse(fs.readFileSync('ML/movieData.json', 'utf8'));
-        if(movieData.hasOwnProperty(movieId)){
-            var dataBlock = movieData[movieId];
-            res.render("movie", {
-                movie : dataBlock
-            });
+app.get("/movie", function (req, res) {
+    //validateLoggedIn(req, res, function(){
+        if (req.query.id) {
+            var movieId = req.query.id;
+            let movieData = JSON.parse(fs.readFileSync('ML/movieData.json', 'utf8'));
+            if (movieData.hasOwnProperty(movieId)) {
+                var dataBlock = movieData[movieId];
+                res.render("movie", {
+                    movie: dataBlock
+                });
+            } else {
+                request('https://www.omdbapi.com/?i=' + movieId + '&apikey=b09eb4ff', function (error, response, body) {
+                    if (JSON.parse(body)["Response"] == "False")
+                        res.send("No movie was found for that ID.");
+                    else {
+                        res.render("movie", {
+                            movie: JSON.parse(body)
+                        });
+                    }
+                });
+            }
         } else {
-            request('https://www.omdbapi.com/?i='+movieId+'&apikey=b09eb4ff', function(error,response, body){
-                if(JSON.parse(body)["Response"]=="False")
-                    res.send("No movie was found for that ID.");
-                else{
-                    res.render("movie",{
-                        movie: JSON.parse(body)
-                    });
-                }
-            });
+            res.send("Please supply a movie ID");
         }
-    } else {
-        res.send("Please supply a movie ID");
-    }
-});
-
-// User account page
-app.get("/user", function(req,res){
-    res.render("user"); // TODO
+    //});
 });
 
 // User settings page
-app.get("/settings", function(req,res){
-    res.render("settings"); // TODO
+app.get("/settings", function (req, res) {
+    //validateLoggedIn(req, res, function(){
+        res.render("settings"); // TODO
+    //});
 });
 
 // About Us page
-app.get("/about", function(req,res){
-    res.render("about");
+app.get("/about", function (req, res) {
+    //validateLoggedIn(req, res, function(){
+        res.render("about");
+    //});
 });
 
 // Browse friend requests page
-app.get("/friendrequests", function(req,res){
-    var friendRequests = ["travis@gmail.com", "terry@gmail.com", "mary@gmail.com"];
-    res.render("friendrequests",{
-        friendRequests: friendRequests
-    });
+app.get("/friendrequests", function (req, res) {
+    //validateLoggedIn(req, res, function(){
+        var friendRequests = ["travis@gmail.com", "terry@gmail.com", "mary@gmail.com"];
+        res.render("friendrequests", {
+            friendRequests: friendRequests
+        });
+    //});
 });
 
 // Movie recommendation page
-app.get("/recommend", function(req,res){
-    res.render("recommend"); // TODO
+app.get("/recommend", function (req, res) {
+    //validateLoggedIn(req, res, function(){
+        res.render("recommend");
+    //});
 });
 
 // 404 Page Not Found page
-app.get("/404", function(req,res){
+app.get("/404", function (req, res) {
     res.render("404");
 });
 
 //Route to userPage
-app.get("/userPage", function(req, res){
-    var titles = ["aquaman", "glass", "shrek", "batman", "captain america"];
-    var requestNumber = titles.length;
-    var requestComplete = 0;
-    var movies = []; // an array of length-2 arrays
-    for(let i = 0; i < requestNumber; i++){
-        request('https://www.omdbapi.com/?t='+titles[i]+'&apikey=b09eb4ff', function(error,response, body){
-            requestComplete++;
-            var image = JSON.parse(body)["Poster"];
-            var title = JSON.parse(body)["Title"];
-            var id = JSON.parse(body)["imdbID"];
-            var movie = [image, title, id];
-            movies.push(movie); // push image/title (length 2 array) to movies array
-            if(requestComplete == requestNumber){ // all requests complete
-                res.render("userPage",{
-                    movies : movies // render page with movies data
-                });
-            }
-        });
-    } 
+app.get("/userPage", function (req, res) {
+    //validateLoggedIn(req, res, function(){
+        var titles = ["aquaman", "glass", "shrek", "batman", "captain america"];
+        var requestNumber = titles.length;
+        var requestComplete = 0;
+        var movies = []; // an array of length-2 arrays
+        for (let i = 0; i < requestNumber; i++) {
+            request('https://www.omdbapi.com/?t=' + titles[i] + '&apikey=b09eb4ff', function (error, response, body) {
+                requestComplete++;
+                var image = JSON.parse(body)["Poster"];
+                var title = JSON.parse(body)["Title"];
+                var id = JSON.parse(body)["imdbID"];
+                var movie = [image, title, id];
+                movies.push(movie); // push image/title (length 2 array) to movies array
+                if (requestComplete == requestNumber) { // all requests complete
+                    res.render("userPage", {
+                        movies: movies // render page with movies data
+                    });
+                }
+            });
+        }
+    //});
 });
 
 // Redirect unknown routes to 404 page
-app.get("/*", function(req, res){
+app.get("/*", function (req, res) {
     res.redirect("/404");
 });
+
+function validateLoggedIn(req, res, callback) {
+    if (!req.session.email) {
+        res.redirect("/");
+    } else {
+        callback(true);
+    }
+}
