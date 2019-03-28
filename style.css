@@ -27,3 +27,7 @@ li{
   .table-wrapper-scroll-y {
     display: block;
   }
+
+  #searchBar{
+      height: 20px;
+  }
