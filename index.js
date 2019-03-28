@@ -98,6 +98,13 @@ app.get("/login", function (req, res) {
     }
 });
 
+// Dashboard page
+app.get("/dashboard", function(req, res){
+    //validateLoggedIn(req, res, function(){
+        res.render("dashboard");
+    //});
+});
+
 // Route for home page
 app.get("/", function (req, res) {
     if (!req.session.email)
