@@ -131,36 +131,41 @@ app.get("/search", function (req, res) {
 
 // Movie page
 app.get("/movie", function (req, res) {
-    //validateLoggedIn(req, res, function(){
-    if (req.query.id) {
-        dataHelper.getRatings(req.session.username, req.query, function (existingRating){ // check if user has already rated
-            var movieId = req.query.id;
-            let movieData = JSON.parse(fs.readFileSync('ML/movieData.json', 'utf8'));
-            if (movieData.hasOwnProperty(movieId)) { // movie data is in local JSON
-                var dataBlock = movieData[movieId];
-                res.render("movie", {
-                    movie: dataBlock,
-                    movieID: req.query.id,
-                    defaultFilledStars: existingRating
-                });
-            } else { // movie data is not in local JSON, hit API
-                request('https://www.omdbapi.com/?i=' + movieId + '&apikey=b09eb4ff', function (error, response, body) {
-                    if (JSON.parse(body)["Response"] == "False")
-                        res.send("No movie was found for that ID.");
-                    else {
+    validateLoggedIn(req, res, function(){
+        if (req.query.id) {
+            dataHelper.getRatings(req.session.email, req.query.id, function (existingRating){ // check if user has already rated
+                if(existingRating==-1)
+                    res.send("There was an error receiving the user's ratings.")
+                else{
+                    existingRating=existingRating;
+                    var movieId = req.query.id;
+                    let movieData = JSON.parse(fs.readFileSync('ML/movieData.json', 'utf8'));
+                    if (movieData.hasOwnProperty(movieId)) { // movie data is in local JSON
+                        var dataBlock = movieData[movieId];
                         res.render("movie", {
-                            movie: JSON.parse(body),
+                            movie: dataBlock,
                             movieID: req.query.id,
                             defaultFilledStars: existingRating
                         });
+                    } else { // movie data is not in local JSON, hit API
+                        request('https://www.omdbapi.com/?i=' + movieId + '&apikey=b09eb4ff', function (error, response, body) {
+                            if (JSON.parse(body)["Response"] == "False")
+                                res.send("No movie was found for that ID.");
+                            else {
+                                res.render("movie", {
+                                    movie: JSON.parse(body),
+                                    movieID: req.query.id,
+                                    defaultFilledStars: existingRating
+                                });
+                            }
+                        });
                     }
-                });
-            }
-        });
-    } else {
-        res.send("Please supply a movie ID");
-    }
-    //});
+                }
+            });
+        } else {
+            res.send("Please supply a movie ID");
+        }
+    });
 });
 
 // User settings page
@@ -216,27 +221,37 @@ app.get("/404", function (req, res) {
 
 //Route to userPage
 app.get("/userPage", function (req, res) {
-    //validateLoggedIn(req, res, function(){
-    var titles = ["aquaman", "glass", "shrek", "batman", "captain america"];
-    var requestNumber = titles.length;
-    var requestComplete = 0;
-    var movies = []; // an array of length-2 arrays
-    for (let i = 0; i < requestNumber; i++) {
-        request('https://www.omdbapi.com/?t=' + titles[i] + '&apikey=b09eb4ff', function (error, response, body) {
-            requestComplete++;
-            var image = JSON.parse(body)["Poster"];
-            var title = JSON.parse(body)["Title"];
-            var id = JSON.parse(body)["imdbID"];
-            var movie = [image, title, id];
-            movies.push(movie); // push image/title (length 2 array) to movies array
-            if (requestComplete == requestNumber) { // all requests complete
-                res.render("userPage", {
-                    movies: movies // render page with movies data
-                });
+    validateLoggedIn(req, res, function(){
+        dataHelper.getRecentRatings(req.session.email, function(results){
+            if(results==-1)
+                res.send("An error occurred gathering user ratings.");
+            else{
+                var requestNumber = results.length;
+                var requestComplete = 0;
+                var movies = []; // an array of length-3 arrays (image/title/rating)
+                for (let i = 0; i < results.length; i++) {
+                    request('https://www.omdbapi.com/?i=' + results[i]["movieID"] + '&apikey=b09eb4ff', function (error, response, body) {
+                        requestComplete++;
+                        var image = JSON.parse(body)["Poster"];
+                        var title = JSON.parse(body)["Title"];
+                        var id = JSON.parse(body)["imdbID"];
+                        var movie = [image, title, id, results[i]["rating"]];
+                        movies.push(movie); // push image/title/rating (length 3 array) to movies array
+                        if (requestComplete == requestNumber) { // all requests complete
+                            res.render("userPage", {
+                                movies: movies // render page with movies data
+                            });
+                        }
+                    });
+                }
+                if(results==[]){
+                    res.render("movies", {
+                        movies: []
+                    });
+                }
             }
         });
-    }
-    //});
+    });
 });
 
 // Redirect unknown routes to 404 page

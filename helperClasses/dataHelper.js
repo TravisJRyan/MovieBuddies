@@ -24,14 +24,20 @@ module.exports.getRatings = function(){
 // callbacks false if insert operation failed, true if success
 // TODO: Need to add timestamps to ratings so we can sort them for user pages
 module.exports.addRating = function(email, movieID, rating, callback){
-
+    
     //exit if null values
     if (!email || !movieID || !rating)
         callback(false);
     
     //insert query
-    let newRatingSQL = "INSERT INTO ratings (email, movieID, rating) VALUES('"+
-        email+"','"+movieID+"',"+rating+");";
+    let newRatingSQL = "INSERT INTO ratings "+
+                        "(email, movieID, rating, datetime) "+
+                        "VALUES "+
+                        "('"+email+"', '"+movieID+"', "+rating+", NOW()) "+
+                        "ON DUPLICATE KEY UPDATE "+
+                        "rating = VALUES(rating), "+
+                        "movieID = VALUES(movieID), "+
+                        "datetime = VALUES(datetime)";
 
     let newRatingQuery = DB.query(newRatingSQL, (err, results) => {    
         if (err){
@@ -43,23 +49,33 @@ module.exports.addRating = function(email, movieID, rating, callback){
     });
 }
 
+module.exports.getRecentRatings = function(email, callback){
+    if(!email)
+        callback(false);
+
+    let getRatingsSql = "SELECT * FROM Ratings WHERE email='"+email+"' LIMIT 10;";
+    let newRatingQuery = DB.query(getRatingsSql, (err, results) => {    
+        if (err){
+            console.log(err);
+            callback([]);
+        } else{
+            callback(results);
+        }
+    });
+}
+
 //TODO: TESTING
 // function returns movie IDs and ratings for all ratings of a given user
-module.exports.getRatings = function(email){
-    if (email == NULL)
-        return null;
-    let selectRatingSQL = "SELECT movieID, rating FROM ratings WHERE email='" + email + "';";
-
-    let selectRatingQuery = DB.selectRatingQuery(selectRatingSQL, (err, results) => {
-        if (err) throw err;
-
-        if (results[0] == undefined)
-            res.render('404');
-        else // return email and ratings object
-            return {
-                "email" : email,
-                "ratings" : results
-            };
+module.exports.getRatings = function(email, movieId, callback){
+    let selectRatingSQL = "SELECT rating FROM ratings WHERE email='" + email + "' AND movieID='"+movieId+"' ORDER BY datetime;";
+    let selectRatingQuery = DB.query(selectRatingSQL, (err, results) => {
+        if (err){
+            console.log(err);
+            callback(-1); // error indicator
+        }
+        if(results.length==0)
+            callback([])
+        else
+            callback(results[0]['rating']);
     });
-    return null;
 }
