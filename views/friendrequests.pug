@@ -3,31 +3,33 @@ head
     link(rel='stylesheet' href='https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css' integrity='sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm' crossorigin='anonymous')
     link(rel='stylesheet' href='style.css')
 body
-    nav.navbar.navbar-expand-lg.navbar-dark.bg-dark
+     nav.navbar.navbar-expand-lg.navbar-dark.bg-dark
         button.navbar-toggler(type='button', data-toggle='collapse', data-target='#navbarSupportedContent', aria-controls='navbarSupportedContent', aria-expanded='false', aria-label='Toggle navigation')
             span.navbar-toggler-icon
         #navbarSupportedContent.collapse.navbar-collapse
+            a#logoLink.navbar-brand(href='/userPage') MovieBuddies
             ul.navbar-nav.mr-auto
-              li
+              li.customLinks
                 a.navbar-brand(href='/') Movies Rated
-              li
-                a.navbar-brand(href='/') View Recommendations
-              li            
-                a.navbar-brand(href='/') Sign-Out
+              li.customLinks
+                a.navbar-brand(href='/settings') Profile Settings  
+              li.customLinks
+                a.navbar-brand(href='/recommend') View Recommendations
+              li.customLinks           
+                a.navbar-brand(href='/logout') Logout
             form.form-inline.my-2.my-lg-0.ml-lg-5(action="/search")
                 input.form-control.ml-lg-4(placeholder='Search', class="form-control" aria-label='Search', name="searchTerm")
                 button.btn.btn-outline-success.my-2.my-sm-0.ml-sm-2(type='submit') Search
-    br
-    .container
-        h3="Friend Requests ("+friendRequests.length+")"
-        table.table.table-striped
-            tbody
-                for friendRequest in friendRequests
-                        tr
-                            td(style="font-size: 15px;")
-                                h4=friendRequest
-                                button.btn-primary Accept
-                                button.btn-danger Reject
+.container.mt-sm-5
+    h3="Friend Requests ("+friendRequests.length+")"
+    table.table.table-striped
+        tbody
+            for friendRequest in friendRequests
+                    tr
+                        td(style="font-size: 15px;")
+                            h4=friendRequest
+                            button.btn-primary Accept
+                            button.btn-danger Reject
 
     // Import JQuery, Popper, and Bootstrap Javascript files
     script(src='https://code.jquery.com/jquery-3.2.1.slim.min.js' integrity='sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN' crossorigin='anonymous')

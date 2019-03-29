@@ -1,9 +1,9 @@
 head
     // Bootstrap CSS
+    link(rel='stylesheet' href='style.css')
     link(rel='stylesheet' href='https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css' integrity='sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm' crossorigin='anonymous')
 body
-    nav.navbar.navbar-expand-lg.navbar-dark.bg-dark
-        a.navbar-brand(href='/') MovieBuddies
+   nav.navbar.navbar-expand-lg.navbar-dark.bg-dark
         button.navbar-toggler(type='button', data-toggle='collapse', data-target='#navbarSupportedContent', aria-controls='navbarSupportedContent', aria-expanded='false', aria-label='Toggle navigation')
             span.navbar-toggler-icon
         #navbarSupportedContent.collapse.navbar-collapse
@@ -41,6 +41,40 @@ body
                         h5="Rated: "+movie["Rated"]
                         h5="Country: "+movie["Country"]
                         h5="Language: "+movie["Language"]
+            a#logoLink.navbar-brand(href='/userPage') MovieBuddies
+            ul.navbar-nav.mr-auto
+              li.customLinks
+                a.navbar-brand(href='/friendrequests') View Friend Request
+              li.customLinks
+                a.navbar-brand(href='/') Movies Rated
+              li.customLinks
+                a.navbar-brand(href='/settings') Profile Settings  
+              li.customLinks
+                a.navbar-brand(href='/recommend') View Recommendations
+              li.customLinks           
+                a.navbar-brand(href='/logout') Logout
+            form.form-inline.my-2.my-lg-0.ml-lg-5(action="/search")
+                input.form-control.ml-lg-4(placeholder='Search', class="form-control" aria-label='Search', name="searchTerm")
+                button.btn.btn-outline-success.my-2.my-sm-0.ml-sm-2(type='submit') Search
+.container.mt-sm-5
+    .d-flex
+        div
+            h2=movie["Title"]+" ("+movie["Year"]+")"
+            img(src=movie["Poster"] height=300 width=200)
+            br
+            br
+            p=movie["Plot"]
+        div
+            br
+            .card(style='width: 30rem;')
+                .card-body
+                    h5="Director: "+movie["Director"]
+                    h5="Genre: "+movie["Genres"]
+                    h5="Actors: "+movie["Actors"]
+                    h5="Runtime: "+movie["Runtime"]
+                    h5="Rated: "+movie["Rated"]
+                    h5="Country: "+movie["Country"]
+                    h5="Language: "+movie["Language"]
 
     // Import JQuery, Popper, and Bootstrap Javascript files
     script(src='https://code.jquery.com/jquery-3.2.1.slim.min.js' integrity='sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN' crossorigin='anonymous')

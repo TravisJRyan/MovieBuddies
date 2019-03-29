@@ -8,55 +8,54 @@ head
   link(rel='stylesheet' href='https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css' integrity='sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO' crossorigin='anonymous')
 
 body
-nav.navbar.navbar-expand-lg.navbar-dark.bg-dark
-        button.navbar-toggler(type='button', data-toggle='collapse', data-target='#navbarSupportedContent', aria-controls='navbarSupportedContent', aria-expanded='false', aria-label='Toggle navigation')
-            span.navbar-toggler-icon
-        #navbarSupportedContent.collapse.navbar-collapse
-            a#logoLink.navbar-brand(href='/userPage') MovieBuddies
-              //- img#logoImage(src='img/cat.jpg' alt='')
-            ul.navbar-nav.mr-auto
-              li.customLinks
-                a.navbar-brand(href='/friendrequests') View Friend Request
-              li.customLinks
-                a.navbar-brand(href='/') Movies Rated
-              li.customLinks
-                a.navbar-brand(href='/settings') Profile Settings  
-              li.customLinks
-                a.navbar-brand(href='/recommend') View Recommendations
-              li.customLinks           
-                a.navbar-brand(href='/logout') Logout
-            form.form-inline.my-2.my-lg-0.ml-lg-5(action="/search")
-                input.form-control.ml-lg-4(placeholder='Search', class="form-control" aria-label='Search', name="searchTerm")
-                button.btn.btn-outline-success.my-2.my-sm-0.ml-sm-2(type='submit') Search
-.container
-  .row
-    .col-sm-6.col-md-3.col-lg-3
-      img.img-thumbnail.mt-2(src='img/cat.jpg' alt='A CAT')
-      br
-      .card.mt-2(style='border-style:none')
-        .card-body
-          h5.card-title#accountHolderName Name
-          p.card-text#accountHolderBio bio information
-    .col-sm-6.col-md-9.col-lg-9
-      .mt-2
-        table.table.borderless.table-hover#lastFive
-          thead.thead-dark
-            tr
-              th
-              th
-                h5 Movie Title
-              th
-                h5 Rating 
-          tbody
-            for movie in movies
+  nav.navbar.navbar-expand-lg.navbar-dark.bg-dark
+          button.navbar-toggler(type='button', data-toggle='collapse', data-target='#navbarSupportedContent', aria-controls='navbarSupportedContent', aria-expanded='false', aria-label='Toggle navigation')
+              span.navbar-toggler-icon
+          #navbarSupportedContent.collapse.navbar-collapse
+              a#logoLink.navbar-brand(href='/userPage') MovieBuddies
+              ul.navbar-nav.mr-auto
+                li.customLinks
+                  a.navbar-brand(href='/friendrequests') View Friend Request
+                li.customLinks
+                  a.navbar-brand(href='/') Movies Rated
+                li.customLinks
+                  a.navbar-brand(href='/settings') Profile Settings  
+                li.customLinks
+                  a.navbar-brand(href='/recommend') View Recommendations
+                li.customLinks           
+                  a.navbar-brand(href='/logout') Logout
+              form.form-inline.my-2.my-lg-0.ml-lg-5(action="/search")
+                  input.form-control.ml-lg-4(placeholder='Search', class="form-control" aria-label='Search', name="searchTerm", id="searchBar")
+                  button.btn.btn-outline-success.my-2.my-sm-0.ml-sm-2(type='submit') Search
+  .container
+    .row
+      .col-sm-6.col-md-3.col-lg-3
+        img.img-thumbnail.mt-2(src='img/cat.jpg' alt='A CAT')
+        br
+        .card.mt-2(style='border-style:none')
+          .card-body
+            h5.card-title#accountHolderName Name
+            p.card-text#accountHolderBio bio information
+      .col-sm-6.col-md-9.col-lg-9
+        .mt-2
+          table.table.borderless.table-hover#lastFive
+            thead.thead-dark
               tr
-                td
-                  img(src=movie[0] height="20%" alt="image")
-                td
-                  a(href="/movie?id="+movie[2])
-                    h5=movie[1]
-                td
-                  h5 5
-script(src='https://code.jquery.com/jquery-3.3.1.slim.min.js' integrity='sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo' crossorigin='anonymous')
-script(src='https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js' integrity='sha384-wHAiFfRlMFy6i5SRaxvfOCifBUQy1xHdJ/yoi7FRNXMRBu5WHdZYu1hA6ZOblgut' crossorigin='anonymous')
-script(src='https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/js/bootstrap.min.js' integrity='sha384-B0UglyR+jN6CkvvICOB2joaf5I4l3gm9GU6Hc1og6Ls7i6U/mkkaduKaBhlAXv9k' crossorigin='anonymous')
+                th
+                th
+                  h5 Movie Title
+                th
+                  h5 Rating 
+            tbody
+              for movie in movies
+                tr
+                  td
+                    img(src=movie[0] height="20%" alt="image")
+                  td
+                    a(href="/movie?id="+movie[2])
+                      h5=movie[1]
+                  td
+                    h5 5
+  script(src='https://code.jquery.com/jquery-3.3.1.slim.min.js' integrity='sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo' crossorigin='anonymous')
+  script(src='https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js' integrity='sha384-wHAiFfRlMFy6i5SRaxvfOCifBUQy1xHdJ/yoi7FRNXMRBu5WHdZYu1hA6ZOblgut' crossorigin='anonymous')
+  script(src='https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/js/bootstrap.min.js' integrity='sha384-B0UglyR+jN6CkvvICOB2joaf5I4l3gm9GU6Hc1og6Ls7i6U/mkkaduKaBhlAXv9k' crossorigin='anonymous')

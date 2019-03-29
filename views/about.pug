@@ -1,29 +1,39 @@
 head
     // Bootstrap CSS
+    link(rel='stylesheet' href='style.css')
     link(rel='stylesheet' href='https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css' integrity='sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm' crossorigin='anonymous')
 body
     nav.navbar.navbar-expand-lg.navbar-dark.bg-dark
-        a.navbar-brand(href='/') MovieBuddies
         button.navbar-toggler(type='button', data-toggle='collapse', data-target='#navbarSupportedContent', aria-controls='navbarSupportedContent', aria-expanded='false', aria-label='Toggle navigation')
             span.navbar-toggler-icon
         #navbarSupportedContent.collapse.navbar-collapse
-            form.form-inline.my-2.my-lg-0(action="/search")
-                input.form-control.mr-sm-2(placeholder='Search', class="form-control" aria-label='Search', name="searchTerm")
-                button.btn.btn-outline-success.my-2.my-sm-0(type='submit') Search
-    
-    .container
-        br
-        h2 About
-        p
-            | MovieBuddies is a data-driven social media website for movie lovers. 
-            | Search for movies you love and rate them to get recommendations.
-        h3 How It Works
-        p
-            | Using machine learning (K-Nearest-Neighbors model), we match you to other users based on things
-            | you love (or don't love) about movies. By building a ratings history, you're letting us see what
-            | kind of movie watcher you are, and it helps us find movies you would like as a result.
+            a#logoLink.navbar-brand(href='/userPage') MovieBuddies
+            ul.navbar-nav.mr-auto
+              li.customLinks
+                a.navbar-brand(href='/friendrequests') View Friend Request
+              li.customLinks
+                a.navbar-brand(href='/') Movies Rated
+              li.customLinks
+                a.navbar-brand(href='/settings') Profile Settings  
+              li.customLinks
+                a.navbar-brand(href='/recommend') View Recommendations
+              li.customLinks           
+                a.navbar-brand(href='/logout') Logout
+            form.form-inline.my-2.my-lg-0.ml-lg-5(action="/search")
+                input.form-control.ml-lg-4(placeholder='Search', class="form-control" aria-label='Search', name="searchTerm")
+                button.btn.btn-outline-success.my-2.my-sm-0.ml-sm-2(type='submit') Search
+.container.mt-sm-4
+    h2 About
+    p
+        | MovieBuddies is a data-driven social media website for movie lovers. 
+        | Search for movies you love and rate them to get recommendations.
+    h3 How It Works
+    p
+        | Using machine learning (K-Nearest-Neighbors model), we match you to other users based on things
+        | you love (or don't love) about movies. By building a ratings history, you're letting us see what
+        | kind of movie watcher you are, and it helps us find movies you would like as a result.
 
-    // Import JQuery, Popper, and Bootstrap Javascript files
-    script(src='https://code.jquery.com/jquery-3.2.1.slim.min.js' integrity='sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN' crossorigin='anonymous')
-    script(src='https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js' integrity='sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q' crossorigin='anonymous')
-    script(src='https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js' integrity='sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl' crossorigin='anonymous')
+// Import JQuery, Popper, and Bootstrap Javascript files
+script(src='https://code.jquery.com/jquery-3.2.1.slim.min.js' integrity='sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN' crossorigin='anonymous')
+script(src='https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js' integrity='sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q' crossorigin='anonymous')
+script(src='https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js' integrity='sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl' crossorigin='anonymous')
