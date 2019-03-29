@@ -1,26 +1,46 @@
+const mysql = require('mysql'); // MySQL
+const fs = require('fs'); // file system
+const secretVars = JSON.parse(fs.readFileSync('secret.json', 'utf8')); // import secret vars
+
+// Connection Object for MySQL
+const DB = mysql.createConnection({
+    host: secretVars["host"],
+    user: secretVars["user"],
+    password: secretVars["password"],
+    database: secretVars["database"]
+});
+
 // TODO: function takes a user's email and returns a list of IMDB ID's for recommended movies by using ML
 module.exports.recommend = function(email){
     return [];
 }
 
-//TODO: TESITNG
+// TODO: check if user has rated a function
+module.exports.getRatings = function(){
+
+}
+
 // function processes a new movie rating for a user
-// returns false if insert operation failed, true if success
-module.exports.addRating = function(email, movieID, rating){
+// callbacks false if insert operation failed, true if success
+// TODO: Need to add timestamps to ratings so we can sort them for user pages
+module.exports.addRating = function(email, movieID, rating, callback){
 
     //exit if null values
-    if (email == NULL || movieID == NULL || rating == NULL)
-        return false;
+    if (!email || !movieID || !rating)
+        callback(false);
     
     //insert query
     let newRatingSQL = "INSERT INTO ratings (email, movieID, rating) VALUES('"+
         email+"','"+movieID+"',"+rating+");";
 
-    let newRatingQuery = DB.newRatingQuery(newRatingSQL, (err, results) => {    
-        if (err) throw error;
+    let newRatingQuery = DB.query(newRatingSQL, (err, results) => {    
+        if (err){
+            console.log(err);
+            callback(false);
+        } else{
+            callback(true);
+        }
     });
-
-    return true;
 }
 
 //TODO: TESTING

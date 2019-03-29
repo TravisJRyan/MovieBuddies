@@ -44,9 +44,9 @@ app.use(bodyParser.urlencoded({
 
 // POST operation for logging in
 app.post("/login", function (req, res) {
-    if(req.session.email) // if already logged in, do not perform operation
+    if (req.session.email) // if already logged in, do not perform operation
         res.redirect("/");
-    else{
+    else {
         accountHelper.authenticate(req.body.email, req.body.password, function (results) {
             if (results.length == 0) {
                 res.redirect("/login?loginFailure=true");
@@ -85,7 +85,7 @@ app.get("/logout", function (req, res) {
 
 // Login page
 app.get("/login", function (req, res) {
-    if(req.session.username)
+    if (req.session.username)
         res.redirect("/");
     else if (req.query.loginFailure && req.query.loginFailure == "true") {
         res.render("login", {
@@ -109,76 +109,97 @@ app.get("/", function (req, res) {
 // Search results page
 app.get("/search", function (req, res) {
     //validateLoggedIn(req, res, function(){
-        if (req.query.searchTerm) {
-            request('https://www.omdbapi.com/?s=' + req.query.searchTerm + '&apikey=b09eb4ff', function (error, response, body) {
-                res.render("search", {
-                    searchTerm: req.query.searchTerm,
-                    searchResults: JSON.parse(body)["Search"]
-                });
+    if (req.query.searchTerm) {
+        request('https://www.omdbapi.com/?s=' + req.query.searchTerm + '&apikey=b09eb4ff', function (error, response, body) {
+            res.render("search", {
+                searchTerm: req.query.searchTerm,
+                searchResults: JSON.parse(body)["Search"]
             });
-        } else {
-            res.send("Please provide a search term.")
-        }
+        });
+    } else {
+        res.send("Please provide a search term.")
+    }
     //});
 });
 
 // Movie page
 app.get("/movie", function (req, res) {
     //validateLoggedIn(req, res, function(){
-        if (req.query.id) {
+    if (req.query.id) {
+        dataHelper.getRatings(req.session.username, req.query, function (existingRating){ // check if user has already rated
             var movieId = req.query.id;
             let movieData = JSON.parse(fs.readFileSync('ML/movieData.json', 'utf8'));
-            if (movieData.hasOwnProperty(movieId)) {
+            if (movieData.hasOwnProperty(movieId)) { // movie data is in local JSON
                 var dataBlock = movieData[movieId];
                 res.render("movie", {
-                    movie: dataBlock
+                    movie: dataBlock,
+                    movieID: req.query.id,
+                    defaultFilledStars: existingRating
                 });
-            } else {
+            } else { // movie data is not in local JSON, hit API
                 request('https://www.omdbapi.com/?i=' + movieId + '&apikey=b09eb4ff', function (error, response, body) {
                     if (JSON.parse(body)["Response"] == "False")
                         res.send("No movie was found for that ID.");
                     else {
                         res.render("movie", {
-                            movie: JSON.parse(body)
+                            movie: JSON.parse(body),
+                            movieID: req.query.id,
+                            defaultFilledStars: existingRating
                         });
                     }
                 });
             }
-        } else {
-            res.send("Please supply a movie ID");
-        }
+        });
+    } else {
+        res.send("Please supply a movie ID");
+    }
     //});
 });
 
 // User settings page
 app.get("/settings", function (req, res) {
     //validateLoggedIn(req, res, function(){
-        res.render("settings"); // TODO
+    res.render("settings"); // TODO
     //});
 });
 
 // About Us page
 app.get("/about", function (req, res) {
     //validateLoggedIn(req, res, function(){
-        res.render("about");
+    res.render("about");
     //});
 });
 
 // Browse friend requests page
 app.get("/friendrequests", function (req, res) {
     //validateLoggedIn(req, res, function(){
-        var friendRequests = ["travis@gmail.com", "terry@gmail.com", "mary@gmail.com"];
-        res.render("friendrequests", {
-            friendRequests: friendRequests
-        });
+    var friendRequests = ["travis@gmail.com", "terry@gmail.com", "mary@gmail.com"];
+    res.render("friendrequests", {
+        friendRequests: friendRequests
+    });
     //});
 });
 
 // Movie recommendation page
 app.get("/recommend", function (req, res) {
     //validateLoggedIn(req, res, function(){
-        res.render("recommend");
+    res.render("recommend");
     //});
+});
+
+// Route for voting on a movie, then redirects to the movie's page
+app.get("/rateMovie", function (req, res) {
+    if (req.session.email && req.query.rating && req.query.movieId) {
+        dataHelper.addRating(req.session.email, req.query.movieId, req.query.rating, function (result) {
+            if (!result)
+                res.send("There was an error rating the movie.");
+            else {
+                res.redirect("/movie?id=" + req.query.movieId);
+            }
+        });
+    } else {
+        res.redirect("/");
+    }
 });
 
 // 404 Page Not Found page
@@ -189,25 +210,25 @@ app.get("/404", function (req, res) {
 //Route to userPage
 app.get("/userPage", function (req, res) {
     //validateLoggedIn(req, res, function(){
-        var titles = ["aquaman", "glass", "shrek", "batman", "captain america"];
-        var requestNumber = titles.length;
-        var requestComplete = 0;
-        var movies = []; // an array of length-2 arrays
-        for (let i = 0; i < requestNumber; i++) {
-            request('https://www.omdbapi.com/?t=' + titles[i] + '&apikey=b09eb4ff', function (error, response, body) {
-                requestComplete++;
-                var image = JSON.parse(body)["Poster"];
-                var title = JSON.parse(body)["Title"];
-                var id = JSON.parse(body)["imdbID"];
-                var movie = [image, title, id];
-                movies.push(movie); // push image/title (length 2 array) to movies array
-                if (requestComplete == requestNumber) { // all requests complete
-                    res.render("userPage", {
-                        movies: movies // render page with movies data
-                    });
-                }
-            });
-        }
+    var titles = ["aquaman", "glass", "shrek", "batman", "captain america"];
+    var requestNumber = titles.length;
+    var requestComplete = 0;
+    var movies = []; // an array of length-2 arrays
+    for (let i = 0; i < requestNumber; i++) {
+        request('https://www.omdbapi.com/?t=' + titles[i] + '&apikey=b09eb4ff', function (error, response, body) {
+            requestComplete++;
+            var image = JSON.parse(body)["Poster"];
+            var title = JSON.parse(body)["Title"];
+            var id = JSON.parse(body)["imdbID"];
+            var movie = [image, title, id];
+            movies.push(movie); // push image/title (length 2 array) to movies array
+            if (requestComplete == requestNumber) { // all requests complete
+                res.render("userPage", {
+                    movies: movies // render page with movies data
+                });
+            }
+        });
+    }
     //});
 });
 

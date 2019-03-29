@@ -20,6 +20,16 @@ body
                 br
                 br
                 p=movie["Plot"]
+                img#star1(src="img/emptystar.png" onclick="rateMovie(1, '"+movieID+"')" onmouseover="fillStars(1)" onmouseout="fillStars("+defaultFilledStars+")" height=40 width=40)
+                img#star2(src="img/emptystar.png" onclick="rateMovie(2, '"+movieID+"')" onmouseover="fillStars(2)" onmouseout="fillStars("+defaultFilledStars+")" height=40 width=40)
+                img#star3(src="img/emptystar.png" onclick="rateMovie(3, '"+movieID+"')" onmouseover="fillStars(3)" onmouseout="fillStars("+defaultFilledStars+")" height=40 width=40)
+                img#star4(src="img/emptystar.png" onclick="rateMovie(4, '"+movieID+"')" onmouseover="fillStars(4)" onmouseout="fillStars("+defaultFilledStars+")" height=40 width=40)
+                img#star5(src="img/emptystar.png" onclick="rateMovie(5, '"+movieID+"')" onmouseover="fillStars(5)" onmouseout="fillStars("+defaultFilledStars+")" height=40 width=40)
+                img#star6(src="img/emptystar.png" onclick="rateMovie(6, '"+movieID+"')" onmouseover="fillStars(6)" onmouseout="fillStars("+defaultFilledStars+")" height=40 width=40)
+                img#star7(src="img/emptystar.png" onclick="rateMovie(7, '"+movieID+"')" onmouseover="fillStars(7)" onmouseout="fillStars("+defaultFilledStars+")" height=40 width=40)
+                img#star8(src="img/emptystar.png" onclick="rateMovie(8, '"+movieID+"')" onmouseover="fillStars(8)" onmouseout="fillStars("+defaultFilledStars+")" height=40 width=40)
+                img#star9(src="img/emptystar.png" onclick="rateMovie(9, '"+movieID+"')" onmouseover="fillStars(9)" onmouseout="fillStars("+defaultFilledStars+")" height=40 width=40)
+                img#star10(src="img/emptystar.png" onclick="rateMovie(10, '"+movieID+"')" onmouseover="fillStars(10)" onmouseout="fillStars("+defaultFilledStars+")" height=40 width=40)
             div
                 br
                 .card(style='width: 30rem;')
@@ -36,3 +46,20 @@ body
     script(src='https://code.jquery.com/jquery-3.2.1.slim.min.js' integrity='sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN' crossorigin='anonymous')
     script(src='https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js' integrity='sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q' crossorigin='anonymous')
     script(src='https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js' integrity='sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl' crossorigin='anonymous')
+
+    script.
+        // Performs a movie rating using movie ID and rating out of 10
+        function rateMovie(rating, movie){
+            window.location="/rateMovie?movieId="+movie+"&rating="+rating;
+        }
+
+        // Fills stars to simulate a vote on mouse hover
+        function fillStars(hoverNumber){
+            var filledStars = hoverNumber;
+            for(var i = 0; i <= hoverNumber; i++){
+                $('#star'+i).attr('src','img/filledstar.png');
+            }
+            for(var i = filledStars+1; i <= 10; i++){
+                $('#star'+i).attr('src','img/emptystar.png');
+            }
+        }
