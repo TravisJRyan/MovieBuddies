@@ -235,9 +235,11 @@ app.get("/userPage", function (req, res) {
                         var image = JSON.parse(body)["Poster"];
                         var title = JSON.parse(body)["Title"];
                         var id = JSON.parse(body)["imdbID"];
-                        var movie = [image, title, id, results[i]["rating"]];
+                        var movie = [image, title, id, results[i]["rating"], results[i]["datetime"]];
                         movies.push(movie); // push image/title/rating (length 3 array) to movies array
+                        console.log(movies);
                         if (requestComplete == requestNumber) { // all requests complete
+                            movies.sort(function(a,b){return a[4] < b[4]});
                             res.render("userPage", {
                                 movies: movies // render page with movies data
                             });
