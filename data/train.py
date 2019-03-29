@@ -9,11 +9,19 @@ import csv
 def readTrainingData():
   filename = '../ML/ratings.csv'
 
-  users = []
-  movies = []
-  ratings = []
+  userList = []
+  movieList = []
+  ratingList = []
 
   with open(filename) as csvFile:
-    readCSV = csv.reader(csvFile, delimiter=',')
+    for line in csvFile:
+      userName, movieID, ratingValue = line.strip().split(",")
+      userList.append(userName)
+      movieList.append(movieID)
+      ratingList.append(int(ratingValue)
+
+  totalMovies = len(movieList)
+  totalUsers =  len(userList)
+    
 
 
