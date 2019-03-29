@@ -7,7 +7,7 @@ import csv
 
 
 def readTrainingData():
-  filename = 'C:\Users\moden0\OneDrive - Fruit of the Loom\Documents\School\496\ratings.csv'
+  filename = '../ML/ratings.csv'
 
   users = []
   movies = []
