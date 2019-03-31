@@ -1,8 +1,8 @@
 # reads training data and trains knn model
 
-import numpy as np
-import matplotlob.pyplot as plt
-import pandas as pd 
+import numpy
+import matplotlob.pyplot as matpyplot
+import pandas
 import csv
 
 
@@ -18,10 +18,19 @@ def readTrainingData():
       userName, movieID, ratingValue = line.strip().split(",")
       userList.append(userName)
       movieList.append(movieID)
-      ratingList.append(int(ratingValue)
+      ratingList.append(int(ratingValue))
 
   totalMovies = len(movieList)
   totalUsers =  len(userList)
+
+  movieRatingsByUser = numpy.zeros((totalMovies, totalUsers))
+
+  for userName, movieID, ratingValue in zip(userList, movieList, ratingList):
+    movieRatingsByUsers[userName]
+
+  return null
+
+
     
 
 
