@@ -2,7 +2,6 @@ const express = require("express"); // Express module for creating a server to r
 const app = express(); // init Express server as a variable
 const session = require('express-session'); // Manages session variables
 const request = require('request'); // HTTP request module
-const axios = require('axios'); // Used for Promises
 const fs = require('fs'); // file system
 const bodyParser = require('body-parser'); // for receving POST bodies
 app.set("view engine", "pug"); // have the server use Pug to render pages
