@@ -67,7 +67,7 @@ app.post("/register", function (req, res) {
         accountHelper.createAccount(req.body.first, req.body.last, req.body.email, req.body.password, function (result) {
             if (result) {
                 req.session.email = req.body.email;
-                res.redirect("/");
+                res.redirect("/userPage");
             } else {
                 res.send("Failed to register.");
             }
@@ -225,6 +225,11 @@ app.get("/userPage", function (req, res) {
         dataHelper.getRecentRatings(req.session.email, function(results){
             if(results==-1)
                 res.send("An error occurred gathering user ratings.");
+            else if(results.length==0){
+                res.render("userPage", {
+                    movies: []
+                });
+            }
             else{
                 var requestNumber = results.length;
                 var requestComplete = 0;
@@ -237,18 +242,12 @@ app.get("/userPage", function (req, res) {
                         var id = JSON.parse(body)["imdbID"];
                         var movie = [image, title, id, results[i]["rating"], results[i]["datetime"]];
                         movies.push(movie); // push image/title/rating (length 3 array) to movies array
-                        console.log(movies);
                         if (requestComplete == requestNumber) { // all requests complete
                             movies.sort(function(a,b){return a[4] < b[4]});
                             res.render("userPage", {
                                 movies: movies // render page with movies data
                             });
                         }
-                    });
-                }
-                if(results==[]){
-                    res.render("movies", {
-                        movies: []
                     });
                 }
             }
