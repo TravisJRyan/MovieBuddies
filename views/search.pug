@@ -23,13 +23,13 @@ body
                 input.form-control.ml-lg-4(placeholder='Search', class="form-control" aria-label='Search', name="searchTerm")
                 button.btn.btn-outline-success.my-2.my-sm-0.ml-sm-2(type='submit') Search
 .container.mt-sm-4
+    h3="Search Results for term '"+searchTerm+"'"
     .table-wrapper-scroll-y.my-custom-scrollbar
         table.table.table-striped.center
             thead.thead-dark
                 tr
                     th
                     th Title
-                    th=h3="Search Results for term '"+searchTerm+"'"
             tbody
                 for result in searchResults
                         tr

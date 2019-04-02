@@ -20,3 +20,6 @@ Python (ML) Tools:
 -NumPy
 -MatPy
 -Pandas
+
+APIs:
+-OMDB API for movie data
