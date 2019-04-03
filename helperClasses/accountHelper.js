@@ -27,8 +27,9 @@ module.exports.authenticate = function (email, password, callback) {
 // function processes a new account creation
 module.exports.createAccount = function (first, last, email, password, callback) {
     // return false if null values
-    if (!first || !last || !email || !password)
+    if (!first || !last || !email || !password){
         callback(false);
+    }
 
     //insert query
     let newUserSQL = "INSERT INTO users (email, pass, firstName, lastName) VALUES('" +

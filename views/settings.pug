@@ -1,29 +1,37 @@
 head
-    // Bootstrap CSS
-    link(rel='stylesheet' href='style.css')
-    link(rel='stylesheet' href='https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css' integrity='sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm' crossorigin='anonymous')
+  // Bootstrap CSS
+  link(rel='stylesheet' href='style.css')
+  link(href='https://gitcdn.github.io/bootstrap-toggle/2.2.2/css/bootstrap-toggle.min.css' rel='stylesheet')
+  link(rel='stylesheet' href='https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css' integrity='sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm' crossorigin='anonymous')
 body
-    nav.navbar.navbar-expand-lg.navbar-dark.bg-dark
-        button.navbar-toggler(type='button', data-toggle='collapse', data-target='#navbarSupportedContent', aria-controls='navbarSupportedContent', aria-expanded='false', aria-label='Toggle navigation')
-            span.navbar-toggler-icon
-        #navbarSupportedContent.collapse.navbar-collapse
-            a#logoLink.navbar-brand(href='/userPage') MovieBuddies
-            ul.navbar-nav.mr-auto
-              li.customLinks
-                a.navbar-brand(href='/friendrequests') View Friend Request
-              li.customLinks
-                a.navbar-brand(href='/') Movies Rated
-              li.customLinks
-                a.navbar-brand(href='/recommend') View Recommendations
-              li.customLinks           
-                a.navbar-brand(href='/logout') Logout
-            form.form-inline.my-2.my-lg-0.ml-lg-5(action="/search")
-                input.form-control.ml-lg-4(placeholder='Search', class="form-control" aria-label='Search', name="searchTerm")
-                button.btn.btn-outline-success.my-2.my-sm-0.ml-sm-2(type='submit') Search
-    
-h3 TODO: THIS PAGE STILL NEEDS TO BE MADE
+  nav.navbar.navbar-expand-lg.navbar-dark.bg-dark
+      button.navbar-toggler(type='button', data-toggle='collapse', data-target='#navbarSupportedContent', aria-controls='navbarSupportedContent', aria-expanded='false', aria-label='Toggle navigation')
+          span.navbar-toggler-icon
+      #navbarSupportedContent.collapse.navbar-collapse
+          a#logoLink.navbar-brand(href='/userPage') MovieBuddies
+          ul.navbar-nav.mr-auto
+            li.customLinks
+              a.navbar-brand(href='/friendrequests') View Friend Request
+            li.customLinks
+              a.navbar-brand(href='/') Movies Rated
+            li.customLinks
+              a.navbar-brand(href='/recommend') View Recommendations
+            li.customLinks           
+              a.navbar-brand(href='/logout') Logout
+          form.form-inline.my-2.my-lg-0.ml-lg-5(action="/search")
+              input.form-control.ml-lg-4(placeholder='Search', class="form-control" aria-label='Search', name="searchTerm")
+              button.btn.btn-outline-success.my-2.my-sm-0.ml-sm-2(type='submit') Search
+
+  .container
+    .row
+      .card.mt-2(style='border-style: 2em')
+        .card-body
+          h3 Switch on to make your profile private:
+          input#toggleSwitch(type='checkbox' data-on="Private" data-off="Not Private" data-toggle='toggle' data-offstyle="danger")
+
 
     // Import JQuery, Popper, and Bootstrap Javascript files
-    script(src='https://code.jquery.com/jquery-3.2.1.slim.min.js' integrity='sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN' crossorigin='anonymous')
-    script(src='https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js' integrity='sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q' crossorigin='anonymous')
-    script(src='https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js' integrity='sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl' crossorigin='anonymous')
+script(src='https://code.jquery.com/jquery-3.2.1.slim.min.js' integrity='sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN' crossorigin='anonymous')
+script(src='https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js' integrity='sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q' crossorigin='anonymous')
+script(src="https://gitcdn.github.io/bootstrap-toggle/2.2.2/js/bootstrap-toggle.min.js")
+script(src='https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js' integrity='sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl' crossorigin='anonymous')
