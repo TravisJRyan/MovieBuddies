@@ -37,10 +37,11 @@ module.exports.createAccount = function (first, last, email, password, callback)
 
     let newUserQuery = DB.query(newUserSQL, (err, results) => {
         if (err) {
-            console.log(err);
+            //console.log(err);
             callback(false);
+        }else{
+            callback(true);
         }
-        callback(true);
     });
 }
 
@@ -110,7 +111,6 @@ module.exports.sendFriendRequest = function (senderEmail, receiverEmail) {
             });
         }
     });
-
 }
 
 //TODO: function processes the accepting of a friend request
