@@ -19,6 +19,7 @@ CREATE TABLE USERS (
   city VARCHAR(20),
   st CHAR(2),
   profileDescription TEXT,
+  privacy BOOLEAN,
   
   PRIMARY KEY(email)
 );
