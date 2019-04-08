@@ -13,13 +13,13 @@ const DB = mysql.createConnection({
 //TODO: function validates a login attempt
 module.exports.authenticate = function (email, password, callback) {
     let existingUserSql = "SELECT * FROM users WHERE email = '" + email + "' AND pass = '" + password + "';";
-    let existingUserQuery = DB.existingUserQuery(existingUserSql, (err, results) => {
+    let existingUserQuery = DB.query(existingUserSql, (err, results) => {
         if (err) {
             console.log(err);
             callback([]);
         }else{
             if (results[0] == undefined) // no user, send to 404
-                res.render('404');
+                callback('404');
             else
                 callback(results);            
         }
@@ -38,7 +38,7 @@ module.exports.createAccount = function (first, last, email, password, callback)
     let newUserSQL = "INSERT INTO users (email, pass, firstName, lastName) VALUES('" +
         email + "','" + password + "','" + first + "','" + last + "');";
 
-    let newUserQuery = DB.newUserQuery(newUserSQL, (err, results) => {
+    let newUserQuery = DB.query(newUserSQL, (err, results) => {
         if (err) {
             console.log(err);
             callback(false);

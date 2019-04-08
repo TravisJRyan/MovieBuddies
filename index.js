@@ -47,7 +47,9 @@ app.post("/login", function (req, res) {
         res.redirect("/");
     else {
         accountHelper.authenticate(req.body.email, req.body.password, function (results) {
-            if (results.length == 0) {
+            if(results=='404')
+                res.redirect("/404");
+            else if (results.length == 0) {
                 res.redirect("/login?loginFailure=true");
             }
             else { // successful login
