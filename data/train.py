@@ -23,17 +23,12 @@ def readTrainingData():
   totalMovies = max(movieList)
   totalUsers =  max(userList)
 
-  movieRatingsByUser = numpy.zeros((totalMovies, totalUsers))
+  movieRatingsByUsers = numpy.zeros((totalMovies, totalUsers))
 
   for userName, movieID, ratingValue in zip(userList, movieList, ratingList):
     movieRatingsByUsers[userName, movieID] = ratingValue
 
-  return movieRatingsByUser
+  return movieRatingsByUsers
 
 
-def trainModel(userRatings):
-  
-
-    
-
-
+##def trainModel(userRatings):
