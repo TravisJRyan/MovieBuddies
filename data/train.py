@@ -20,18 +20,18 @@ from sklearn.preprocessing import Imputer
 import csv
 import scipy.sparse as sp
 import os.path
+import pickle
 
 def readTrainingData():
 
   my_path = os.path.abspath(os.path.dirname(__file__))
-  path = os.path.join(my_path, "../ML/newRatings2.csv")
-
-  print("Hello")
+  path = os.path.join(my_path, "../ML/test.csv")
 
   userList = []
   movieList = []
   ratingList = []
 
+  print("begin loading data")
   with open(path) as csvFile:
     for line in csvFile:
       userName, movieID, ratingValue = line.strip().split(",")
@@ -39,14 +39,15 @@ def readTrainingData():
       movieList.append(int(movieID))
       ratingList.append(int(ratingValue))
 
-  totalMovies = max(movieList)
-  totalUsers =  max(userList)
+  totalMovies = max(movieList) + 1
+  totalUsers =  max(userList) + 1
 
-  movieRatingsByUsers = np.zeros((totalMovies, totalUsers))
+  movieRatingsByUsers = np.zeros((totalUsers, totalMovies))
 
   for userName, movieID, ratingValue in zip(userList, movieList, ratingList):
     movieRatingsByUsers[userName, movieID] = ratingValue
 
+  print("completed loading data")
   return movieRatingsByUsers
 
 def main():
@@ -64,9 +65,15 @@ def main():
   test_ids = list(test_ids)
   n_test_users = len(test_ids)
 
-  training_matrix = ratings_matrix[train_ids, :]
-  testing_matrix = ratings_matrix[test_ids, :]
-  true_ratings = testing_matrix.copy()
+  training_matrix = []
+  testing_matrix = []
+
+  for user_id in train_ids:
+    training_matrix.append(ratings_matrix[user_id, :])
+
+  for user_id in testing_matrix:
+    testing_matrix.append(ratings_matrix[test_ids, :])
+
 
   ## impute unknown ratings
   imputer = Imputer(missing_values=0)
@@ -82,7 +89,6 @@ def main():
         
   training_matrix = training_matrix[:, selected_columns]
   testing_matrix = testing_matrix[:, selected_columns]
-  true_ratings = true_ratings[:, selected_columns]
 
   n_remaining_movies = training_matrix.shape[1]
 
@@ -90,7 +96,11 @@ def main():
   knn = NearestNeighbors()
   knn.fit(training_imputed_matrix)
 
+  ## Pickle model to use online later
+  filename = 'knn_model.sav'
+  pickle.dump(knn, open(filename, 'wb'))
+
+
+
+
 main()
-
-
-##def trainModel(userRatings):
