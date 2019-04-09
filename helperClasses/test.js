@@ -17,3 +17,13 @@ accountHelper.createAccount("Terry", "James", "qweqwe@uuop.com", "test", functio
     }
 });
 
+
+accountHelper.getUser("qweqwe@uuop.com", function (result){
+    if(result){
+        console.log(result);
+    }
+    else{
+        console.log(result);
+    }
+});
+

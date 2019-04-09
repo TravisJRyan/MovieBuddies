@@ -59,12 +59,12 @@ module.exports.getUser = function (email, callback) {
 
     // Select query
     let selectUserSQL = "SELECT firstName, lastName, age, gender, " +
-        "city, st, profileDescription FROM users WHERE email='" + email + "';";
+        "city, st, profileDescription, privacy FROM users WHERE email='" + email + "';";
 
-    let selectUserQuery = DB.selectUserQuery(selectUserSQL, (err, results) => {
+    let selectUserQuery = DB.query(selectUserSQL, (err, results) => {
         if (err) {
             console.log(err);
-            callback(false);
+            callback(null);
         }else{
             if (results[0] == undefined){ // no user, send to 404
                 res.render('404');
@@ -76,7 +76,8 @@ module.exports.getUser = function (email, callback) {
                     "gender": results[0].gender,
                     "city": results[0].city,
                     "st": results[0].st,
-                    "profileDescription": results[0].profileDescription };
+                    "profileDescription": results[0].profileDescription,
+                    "privacy" : results[0].privacy };
 
                 callback(user);
             }
@@ -85,7 +86,7 @@ module.exports.getUser = function (email, callback) {
 }
 
 //TODO: update all fields
-module.exports.updateUser = function () {
+module.exports.updateUser = function (email, ) {
 
 }
 
@@ -103,10 +104,11 @@ module.exports.sendFriendRequest = function (senderEmail, receiverEmail, callbac
     }else{
 
         // Check for existing friendship
-        let checkExistingSQL = "SELECT sender FROM friends WHERE (sender='" +
-            sendermail + "' OR receiver='" + receiverEmail + "');";
+        let checkExistingSQL = "SELECT * FROM friends WHERE sender='"+senderEmail + "' AND receiver='"+receiverEmail
+                                +"UNION" +
+                                "SELECT * FROM friends WHERE receiver='"+senderEmail+"' AND receiver='"+senderEmail+"';";
 
-        let checkExistingQuery = DB.checkExistingQuery(checkExistingSQL, (err, results) => {
+        let checkExistingQuery = DB.query(checkExistingSQL, (err, results) => {
             if (err) {
                 console.log(err);
                 callback(false);
@@ -116,7 +118,7 @@ module.exports.sendFriendRequest = function (senderEmail, receiverEmail, callbac
                     let addNewFriendSQL = "INSERT INTO friends (sender, receiver, friendshipStatus) VALUES('" +
                         sendermail + "','" + receiverEmail + "',0);";
 
-                    let addNewFriendQuery = DB.addNewFriendQuery(addNewFriendSQL, (err, results) => {
+                    let addNewFriendQuery = DB.query(addNewFriendSQL, (err, results) => {
                         if (err) {
                             console.log(err);
                             callback(false);
@@ -124,7 +126,8 @@ module.exports.sendFriendRequest = function (senderEmail, receiverEmail, callbac
                             callback(true);
                         }
                     });
-                }
+                }else  //If friendship exists, do not create new
+                    callback(false);                
             }
         });
     }
@@ -142,9 +145,9 @@ module.exports.acceptFriendRequest = function (senderEmail, acceptingEmail) {
 module.exports.getFriends = function (email) {
     if (email == NULL)
         return null;
-    let selectRatingSQL = "SELECT movieID, rating FROM ratings WHERE email='" + email + "';";
+    let selectRatingSQL = "SELECT * FROM ratings WHERE email='" + email + "';";
 
-    let selectRatingQuery = DB.selectRatingQuery(selectRatingSQL, (err, results) => {
+    let selectRatingQuery = DB.query(selectRatingSQL, (err, results) => {
         if (err) throw err;
 
         if (results[0] == undefined)

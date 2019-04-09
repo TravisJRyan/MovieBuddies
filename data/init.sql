@@ -25,7 +25,7 @@ CREATE TABLE USERS (
 );
 
 /* Friends Table
-    status: 0 = Pending, 1 = Active, -1 = Blocked
+    status: 0 = Pending, 1 = Active
 
 DROP TABLE FRIENDS;		*/
 
