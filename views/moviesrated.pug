@@ -23,24 +23,22 @@ body
                 input.form-control.ml-lg-4(placeholder='Search', class="form-control" aria-label='Search', name="searchTerm")
                 button.btn.btn-outline-success.my-2.my-sm-0.ml-sm-2(type='submit') Search
 .container.mt-sm-4
-    h3="Search Results for term '"+searchTerm+"'"
+    h3 Movies Rated
     .table-wrapper-scroll-y.my-custom-scrollbar
         table.table.table-striped.center
-            if(searchResults)
+            if(ratings)
                 thead.thead-dark
                     tr
                         th
                         th Title
                     tbody
-                        for result in searchResults
+                        for rating in ratings
                                 tr
-                                    td
-                                        img(src=result["Poster"] height=150 width=100)
                                     td.align-middle(colspan='2')
-                                        a(href="/movie?id="+result["imdbID"])="\t"+result["Title"]
+                                        a(href="/movie?id="+rating["movieID"])="\t"+rating["movieID"]
+                                        img(src=movieData[rating["movieID"]]["Poster"])
             else
                 h3="No results found!"
-
     // Import JQuery, Popper, and Bootstrap Javascript files
     script(src='https://code.jquery.com/jquery-3.2.1.slim.min.js' integrity='sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN' crossorigin='anonymous')
     script(src='https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js' integrity='sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q' crossorigin='anonymous')

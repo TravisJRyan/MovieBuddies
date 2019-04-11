@@ -12,7 +12,7 @@ body
           button.navbar-toggler(type='button', data-toggle='collapse', data-target='#navbarSupportedContent', aria-controls='navbarSupportedContent', aria-expanded='false', aria-label='Toggle navigation')
               span.navbar-toggler-icon
           #navbarSupportedContent.collapse.navbar-collapse
-              a#logoLink.navbar-brand(href='/userPage') MovieBuddies
+              a#logoLink.navbar-brand(href='/') MovieBuddies
               ul.navbar-nav.mr-auto
                 li.customLinks
                   a.navbar-brand(href='/friendrequests') View Friend Request
@@ -30,11 +30,11 @@ body
   .container
     .row
       .col-sm-6.col-md-3.col-lg-3
-        img.img-thumbnail.mt-2(src='img/cat.jpg' alt='A CAT')
+        img.img-thumbnail.mt-2(src='img/avatar.jpg' height=200 width=200)
         br
         .card.mt-2(style='border-style:none')
           .card-body
-            h5.card-title#accountHolderName Name
+            h5.card-title#accountHolderName=email
             p.card-text#accountHolderBio bio information
       .col-sm-6.col-md-9.col-lg-9
         .mt-2

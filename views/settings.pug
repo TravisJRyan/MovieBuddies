@@ -8,7 +8,7 @@ body
       button.navbar-toggler(type='button', data-toggle='collapse', data-target='#navbarSupportedContent', aria-controls='navbarSupportedContent', aria-expanded='false', aria-label='Toggle navigation')
           span.navbar-toggler-icon
       #navbarSupportedContent.collapse.navbar-collapse
-          a#logoLink.navbar-brand(href='/userPage') MovieBuddies
+          a#logoLink.navbar-brand(href='/') MovieBuddies
           ul.navbar-nav.mr-auto
             li.customLinks
               a.navbar-brand(href='/friendrequests') View Friend Request
@@ -23,11 +23,23 @@ body
               button.btn.btn-outline-success.my-2.my-sm-0.ml-sm-2(type='submit') Search
 
   .container
-    .row
-      .card.mt-2(style='border-style: 2em')
-        .card-body
-          h3 Switch on to make your profile private:
-          input#toggleSwitch(type='checkbox' data-on="Private" data-off="Not Private" data-toggle='toggle' data-offstyle="danger")
+    h3 Settings
+    .card.mt-2(style='border-style: 2em')
+      .card-body
+        h4 Privacy Setting:
+        input#toggleSwitch(type='checkbox' data-on="Private" data-off="Not Private" data-toggle='toggle' data-offstyle="danger")
+        br
+        h4 Bio
+        textarea.form-control#bioText(rows="5")
+        h4 Age
+        br
+        h4 Gender
+        br
+        h4 City
+        br
+        h4 State
+        br
+        button.btn.btn-outline-success(onclick="updateSettings()") Submit
 
 
     // Import JQuery, Popper, and Bootstrap Javascript files
@@ -35,3 +47,8 @@ script(src='https://code.jquery.com/jquery-3.2.1.slim.min.js' integrity='sha384-
 script(src='https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js' integrity='sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q' crossorigin='anonymous')
 script(src="https://gitcdn.github.io/bootstrap-toggle/2.2.2/js/bootstrap-toggle.min.js")
 script(src='https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js' integrity='sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl' crossorigin='anonymous')
+
+script.
+  function updateSettings(){
+
+  }

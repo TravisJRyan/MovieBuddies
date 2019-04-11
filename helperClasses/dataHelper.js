@@ -15,11 +15,6 @@ module.exports.recommend = function(email){
     return [];
 }
 
-// TODO: check if user has rated a function
-module.exports.getRatings = function(){
-
-}
-
 // function processes a new movie rating for a user
 // callbacks false if insert operation failed, true if success
 // TODO: Need to add timestamps to ratings so we can sort them for user pages
@@ -54,7 +49,7 @@ module.exports.getRecentRatings = function(email, callback){
         callback(false);
 
     let getRatingsSql = "SELECT * FROM Ratings WHERE email='"+email+"' LIMIT 10;";
-    let newRatingQuery = DB.query(getRatingsSql, (err, results) => {    
+    let getRatingQuery = DB.query(getRatingsSql, (err, results) => {    
         if (err){
             console.log(err);
             callback([]);
@@ -66,7 +61,23 @@ module.exports.getRecentRatings = function(email, callback){
 
 //TODO: TESTING
 // function returns movie IDs and ratings for all ratings of a given user
-module.exports.getRatings = function(email, movieId, callback){
+module.exports.getRatings = function(email, callback){
+    if(!email)
+        callback(false);
+
+    let getRatingsSql = "SELECT * FROM Ratings WHERE email='"+email+"' ORDER BY datetime;";
+    let getRatingQuery = DB.query(getRatingsSql, (err, results) => {    
+        if (err || results.length==0){
+            callback([]);
+        } else{
+            callback(results);
+        }
+    });
+}
+
+//TODO: TESTING
+// function returns rating for a movie for a given user
+module.exports.getRating = function(email, movieId, callback){
     let selectRatingSQL = "SELECT rating FROM ratings WHERE email='" + email + "' AND movieID='"+movieId+"' ORDER BY datetime;";
     let selectRatingQuery = DB.query(selectRatingSQL, (err, results) => {
         if (err){

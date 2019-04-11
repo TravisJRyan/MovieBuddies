@@ -46,6 +46,7 @@ CREATE TABLE RATINGS (
 	email VARCHAR(254),
   movieID VARCHAR(10),
 	rating INT,
+  datetime DATETIME
     
   PRIMARY KEY(email, movieID)
 );

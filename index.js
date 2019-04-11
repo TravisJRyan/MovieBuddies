@@ -47,14 +47,14 @@ app.post("/login", function (req, res) {
         res.redirect("/");
     else {
         accountHelper.authenticate(req.body.email, req.body.password, function (results) {
-            if(results=='404')
+            if (results == '404')
                 res.redirect("/404");
             else if (results.length == 0) {
                 res.redirect("/login?loginFailure=true");
             }
             else { // successful login
                 req.session.email = req.body.email; // set login for session
-                res.redirect("/userPage"); // redirect to dashboard
+                res.redirect("/userPage?email=" + req.session.email); // redirect to dashboard
             }
         });
     }
@@ -68,7 +68,7 @@ app.post("/register", function (req, res) {
         accountHelper.createAccount(req.body.first, req.body.last, req.body.email, req.body.password, function (result) {
             if (result) {
                 req.session.email = req.body.email;
-                res.redirect("/userPage");
+                res.redirect("/userPage?email=" + req.session.email);
             } else {
                 res.send("Failed to register.");
             }
@@ -99,11 +99,24 @@ app.get("/login", function (req, res) {
     }
 });
 
-// Dashboard page
-app.get("/dashboard", function(req, res){
-    //validateLoggedIn(req, res, function(){
-        res.render("dashboard");
-    //});
+app.get("/moviesrated", function (req, res) {
+    validateLoggedIn(req, res, function () {
+        dataHelper.getRatings(req.session.email, function (results) {
+            movieIDs = [];
+            for(var i = 0; i < results.length; i++){
+                movieIDs.push(results[i]["movieID"]);
+            }
+            console.log(movieIDs);
+            getMovieData(movieIDs, function(dataResult){
+                console.log(dataResult);
+                console.log(results);
+                res.render("moviesrated", {
+                    movieData: dataResult,
+                    ratings : results
+                });
+            });
+        });
+    });
 });
 
 // Route for home page
@@ -111,34 +124,34 @@ app.get("/", function (req, res) {
     if (!req.session.email)
         res.redirect("login");
     else
-        res.redirect("userPage");
+        res.redirect("userPage?email=" + req.session.email);
 });
 
 // Search results page
 app.get("/search", function (req, res) {
-    //validateLoggedIn(req, res, function(){
-    if (req.query.searchTerm) {
-        request('https://www.omdbapi.com/?s=' + req.query.searchTerm + '&apikey=b09eb4ff', function (error, response, body) {
-            res.render("search", {
-                searchTerm: req.query.searchTerm,
-                searchResults: JSON.parse(body)["Search"]
+    validateLoggedIn(req, res, function () {
+        if (req.query.searchTerm) {
+            request('https://www.omdbapi.com/?s=' + req.query.searchTerm + '&apikey=b09eb4ff', function (error, response, body) {
+                res.render("search", {
+                    searchTerm: req.query.searchTerm,
+                    searchResults: JSON.parse(body)["Search"]
+                });
             });
-        });
-    } else {
-        res.send("Please provide a search term.")
-    }
-    //});
+        } else {
+            res.send("Please provide a search term.");
+        }
+    });
 });
 
 // Movie page
 app.get("/movie", function (req, res) {
-    validateLoggedIn(req, res, function(){
+    validateLoggedIn(req, res, function () {
         if (req.query.id) {
-            dataHelper.getRatings(req.session.email, req.query.id, function (existingRating){ // check if user has already rated
-                if(existingRating==-1)
+            dataHelper.getRating(req.session.email, req.query.id, function (existingRating) { // check if user has already rated
+                if (existingRating == -1)
                     res.send("There was an error receiving the user's ratings.")
-                else{
-                    existingRating=existingRating;
+                else {
+                    existingRating = existingRating;
                     var movieId = req.query.id;
                     let movieData = JSON.parse(fs.readFileSync('ML/movieData.json', 'utf8'));
                     if (movieData.hasOwnProperty(movieId)) { // movie data is in local JSON
@@ -222,39 +235,70 @@ app.get("/404", function (req, res) {
 
 //Route to userPage
 app.get("/userPage", function (req, res) {
-    validateLoggedIn(req, res, function(){
-        dataHelper.getRecentRatings(req.session.email, function(results){
-            if(results==-1)
-                res.send("An error occurred gathering user ratings.");
-            else if(results.length==0){
-                res.render("userPage", {
-                    movies: []
-                });
-            }
-            else{
-                var requestNumber = results.length;
-                var requestComplete = 0;
-                var movies = []; // an array of length-3 arrays (image/title/rating)
-                for (let i = 0; i < results.length; i++) {
-                    request('https://www.omdbapi.com/?i=' + results[i]["movieID"] + '&apikey=b09eb4ff', function (error, response, body) {
-                        requestComplete++;
-                        var image = JSON.parse(body)["Poster"];
-                        var title = JSON.parse(body)["Title"];
-                        var id = JSON.parse(body)["imdbID"];
-                        var movie = [image, title, id, results[i]["rating"], results[i]["datetime"]];
-                        movies.push(movie); // push image/title/rating (length 3 array) to movies array
-                        if (requestComplete == requestNumber) { // all requests complete
-                            movies.sort(function(a,b){return a[4] < b[4]});
-                            res.render("userPage", {
-                                movies: movies // render page with movies data
-                            });
-                        }
+    validateLoggedIn(req, res, function () {
+        if (!req.query.email) {
+            res.redirect("/404");
+        } else {
+            dataHelper.getRecentRatings(req.query.email, function (results) {
+                if (results == -1)
+                    res.send("An error occurred gathering user ratings.");
+                else if (results.length == 0) { // TODO : make it impossible to visit nonexistant user's pages
+                    res.render("userPage", {
+                        movies: [],
+                        email: req.query.email
                     });
                 }
-            }
-        });
+                else {
+                    var requestNumber = results.length;
+                    var requestComplete = 0;
+                    var movies = []; // an array of length-3 arrays (image/title/rating)
+                    for (let i = 0; i < results.length; i++) {
+                        request('https://www.omdbapi.com/?i=' + results[i]["movieID"] + '&apikey=b09eb4ff', function (error, response, body) {
+                            requestComplete++;
+                            var image = JSON.parse(body)["Poster"];
+                            var title = JSON.parse(body)["Title"];
+                            var id = JSON.parse(body)["imdbID"];
+                            var movie = [image, title, id, results[i]["rating"], results[i]["datetime"]];
+                            movies.push(movie); // push image/title/rating (length 3 array) to movies array
+                            if (requestComplete == requestNumber) { // all requests complete
+                                movies.sort(function (a, b) { return a[4] < b[4] });
+                                res.render("userPage", {
+                                    movies: movies, // render page with movies data
+                                    email: req.query.email
+                                });
+                            }
+                        });
+                    }
+                }
+            });
+        }
     });
 });
+
+// Function takes an array of movie IDs and returns JSON mapping those IDs to movie data (title, poster, etc)
+function getMovieData(movieIDs, callback) {
+    results = {};
+    completedRequests = 0;
+    let movieData = JSON.parse(fs.readFileSync('ML/movieData.json', 'utf8'));
+    for (var i = 0; i < movieIDs.length; i++) {
+        currentMovieID = movieIDs[i];
+        if (movieData.hasOwnProperty(currentMovieID)) { // movie data is in local JSON
+            results[currentMovieID] = movieData[currentMovieID];
+            completedRequests++;
+            if (completedRequests == movieIDs.length)
+                callback(results);
+        } else { // data is not in local file date
+            request('https://www.omdbapi.com/?i=' + currentMovieID + '&apikey=b09eb4ff', function (error, response, body) {
+                if(error)
+                    console.log(error);
+                results[currentMovieID] = JSON.parse(body);
+                completedRequests++;
+                if (completedRequests == movieIDs.length)
+                    callback(results);
+            });
+        }
+    }
+}
 
 // Redirect unknown routes to 404 page
 app.get("/*", function (req, res) {
