@@ -71,8 +71,8 @@ def main():
   for user_id in train_ids:
     training_matrix.append(ratings_matrix[user_id, :])
 
-  for user_id in testing_matrix:
-    testing_matrix.append(ratings_matrix[test_ids, :])
+  for user_id in test_ids:
+    testing_matrix.append(ratings_matrix[user_id, :])
 
 
   ## impute unknown ratings
@@ -86,7 +86,8 @@ def main():
   for movie_id in range(n_movies):
     if not np.isnan(imputer.statistics_[movie_id]):
         selected_columns.append(movie_id)
-        
+
+  for column in selected_columns      
   training_matrix = training_matrix[:, selected_columns]
   testing_matrix = testing_matrix[:, selected_columns]
 
