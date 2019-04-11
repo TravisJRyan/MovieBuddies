@@ -35,7 +35,7 @@ body
                         for rating in ratings
                                 tr
                                     td.align-middle(colspan='2')
-                                        a(href="/movie?id="+rating["movieID"])="\t"+rating["movieID"]
+                                        a(href="/movie?id="+rating["movieID"])="\t"+movieData[rating["movieID"]]["Title"]
                                         img(src=movieData[rating["movieID"]]["Poster"])
             else
                 h3="No results found!"
