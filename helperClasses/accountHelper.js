@@ -16,12 +16,16 @@ module.exports.authenticate = function (email, password, callback) {
     let existingUserQuery = DB.query(existingUserSql, (err, results) => {
         if (err) {
             console.log(err);
+            DB.end();
             callback([]);
         }else{
-            if (results[0] == undefined) // no user, send to 404
-                callback('404');
-            else
-                callback(results);            
+            if (results[0] == undefined){ // no user, send to 404
+              DB.end();
+              callback('404');
+            }else{
+              DB.end();
+              callback(results);
+            }
         }
     });
 };
@@ -31,7 +35,8 @@ module.exports.authenticate = function (email, password, callback) {
 module.exports.createAccount = function (first, last, email, password, callback) {
     // return false if null values
     if (!first || !last || !email || !password){
-        callback(false);
+      DB.end();
+      callback(false);
     }
 
     //insert query
@@ -40,10 +45,12 @@ module.exports.createAccount = function (first, last, email, password, callback)
 
     let newUserQuery = DB.query(newUserSQL, (err, results) => {
         if (err) {
-            console.log(err);
-            callback(false);
+          console.log(err);
+          DB.end();
+          callback(false);
         }else{
-            callback(true);
+          DB.end();
+          callback(true);
         }
     });
 }
@@ -52,37 +59,41 @@ module.exports.createAccount = function (first, last, email, password, callback)
 // get all of user's information for given email
 // Otherwise, return null
 module.exports.getUser = function (email, callback) {
-
     // return null if no email
-    if (email == NULL)
-        return null;
+    if (email == NULL){
+      DB.end();      
+      callback(null);
+    }else{
+      // Select query
+      let selectUserSQL = "SELECT firstName, lastName, age, gender, " +
+          "city, st, profileDescription, privacy FROM users WHERE email='" + email + "';";
 
-    // Select query
-    let selectUserSQL = "SELECT firstName, lastName, age, gender, " +
-        "city, st, profileDescription, privacy FROM users WHERE email='" + email + "';";
-
-    let selectUserQuery = DB.query(selectUserSQL, (err, results) => {
-        if (err) {
+      let selectUserQuery = DB.query(selectUserSQL, (err, results) => {
+          if (err) {
             console.log(err);
+            DB.end();
             callback(null);
-        }else{
-            if (results[0] == undefined){ // no user, send to 404
+          }else{
+              if (results[0] == undefined){ // no user, send to 404
+                DB.end();
                 res.render('404');
-            }else{  // return user information
-                 let user = { "email": email,
-                    "firstName": results[0].firstName,
-                    "lastName": results[0].lastName,
-                    "age": results[0].age,
-                    "gender": results[0].gender,
-                    "city": results[0].city,
-                    "st": results[0].st,
-                    "profileDescription": results[0].profileDescription,
-                    "privacy" : results[0].privacy };
-
-                callback(user);
-            }
-        }
-    });
+              }else{  // return user information
+                  let user = { "email": email,
+                      "firstName": results[0].firstName,
+                      "lastName": results[0].lastName,
+                      "age": results[0].age,
+                      "gender": results[0].gender,
+                      "city": results[0].city,
+                      "st": results[0].st,
+                      "profileDescription": results[0].profileDescription,
+                      "privacy" : results[0].privacy };
+                      
+                  DB.end();
+                  callback(user);
+              }
+          }
+      });
+    }
 }
 
 //TODO: update all fields
@@ -100,9 +111,9 @@ module.exports.updatePrivacySettings = function (email, privacyOption, callback)
 module.exports.sendFriendRequest = function (senderEmail, receiverEmail, callback) {
 
     if (senderEmail == NULL || receiverEmail == NULL){ // Check for Null values
-        callback(false);
+      DB.end();
+      callback(false);
     }else{
-
         // Check for existing friendship
         let checkExistingSQL = "SELECT * FROM friends WHERE sender='"+senderEmail + "' AND receiver='"+receiverEmail
                                 +"UNION" +
@@ -110,32 +121,43 @@ module.exports.sendFriendRequest = function (senderEmail, receiverEmail, callbac
 
         let checkExistingQuery = DB.query(checkExistingSQL, (err, results) => {
             if (err) {
-                console.log(err);
-                callback(false);
+              console.log(err);
+              DB.end();
+              callback(false);
             }else{
-                if (results[0] == undefined) { // If no friendship, create new
+              if (results[0] == undefined) { // If no friendship, create new
 
-                    let addNewFriendSQL = "INSERT INTO friends (sender, receiver, friendshipStatus) VALUES('" +
-                        sendermail + "','" + receiverEmail + "',0);";
+                let addNewFriendSQL = "INSERT INTO friends (sender, receiver, friendshipStatus) VALUES('" +
+                    sendermail + "','" + receiverEmail + "',0);";
 
-                    let addNewFriendQuery = DB.query(addNewFriendSQL, (err, results) => {
-                        if (err) {
-                            console.log(err);
-                            callback(false);
-                        }else{
-                            callback(true);
-                        }
-                    });
-                }else  //If friendship exists, do not create new
-                    callback(false);                
+                let addNewFriendQuery = DB.query(addNewFriendSQL, (err, results) => {
+                  if (err) {
+                    DB.end();
+                    console.log(err);
+                    callback(false);
+                  }else{
+                    DB.end();
+                    callback(true);
+                  }
+                });
+              }else{  //If friendship exists, do not create new
+                DB.end();              
+                callback(false);                
+              }
             }
         });
     }
 }
 
 //TODO: function processes the accepting of a friend request
-module.exports.acceptFriendRequest = function (senderEmail, acceptingEmail) {
-    return true;
+module.exports.acceptFriendRequest = function (senderEmail, acceptingEmail, callback) {
+    callback(true);
+}
+
+
+//TODO: All pending friend requests for given user email
+module.exports.getPendingRequests = function (email, callback) {
+  callback(true);
 }
 
 
