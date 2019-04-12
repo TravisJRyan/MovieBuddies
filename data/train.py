@@ -23,6 +23,9 @@ import os.path
 import pickle
 from sklearn.model_selection import train_test_split
 
+
+## Function reads ratings from .csv 
+## and returns sparse coordinate matrix
 def readTrainingData():
 
   my_path = os.path.abspath(os.path.dirname(__file__))
@@ -57,6 +60,5 @@ def main():
   filename = 'knn_model.sav'
   pickle.dump(knn, open(filename, 'wb'))
 
-  print(knn)
 
 main()
