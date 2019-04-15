@@ -26,20 +26,19 @@ body
     h3 Settings
     .card.mt-2(style='border-style: 2em')
       .card-body
-        h4 Privacy Setting:
+        h4.mb-4 Privacy Setting:
         input#toggleSwitch(type='checkbox' data-on="Private" data-off="Not Private" data-toggle='toggle' data-offstyle="danger")
-        br
         h4 Bio
         textarea.form-control#bioText(rows="5")
         h4 Age
-        br
+        input(type='text' class="form-control")
         h4 Gender
-        br
+        input(type='text' class="form-control")
         h4 City
-        br
+        input(type='text' class="form-control")
         h4 State
-        br
-        button.btn.btn-outline-success(onclick="updateSettings()") Submit
+        input(type='text' class="form-control")
+      button.btn.btn-outline-success(onclick="updateSettings()") Submit
 
 
     // Import JQuery, Popper, and Bootstrap Javascript files

@@ -184,9 +184,10 @@ app.get("/movie", function (req, res) {
 
 // User settings page
 app.get("/settings", function (req, res) {
-    //validateLoggedIn(req, res, function(){
+    validateLoggedIn(req, res, function(){
+        
     res.render("settings"); // TODO
-    //});
+    });
 });
 
 // About Us page
