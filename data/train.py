@@ -21,11 +21,15 @@ import csv
 import scipy.sparse as sp
 import os.path
 import pickle
+from sklearn.model_selection import train_test_split
 
+
+## Function reads ratings from .csv 
+## and returns sparse coordinate matrix
 def readTrainingData():
 
   my_path = os.path.abspath(os.path.dirname(__file__))
-  path = os.path.join(my_path, "../ML/test.csv")
+  path = os.path.join(my_path, "../ML/newRatings2.csv")
 
   userList = []
   movieList = []
@@ -39,69 +43,22 @@ def readTrainingData():
       movieList.append(int(movieID))
       ratingList.append(int(ratingValue))
 
-  totalMovies = max(movieList) + 1
-  totalUsers =  max(userList) + 1
+  movieRatingsByUsers = sp.coo_matrix((ratingList, (userList, movieList)))
 
-  movieRatingsByUsers = np.zeros((totalUsers, totalMovies))
-
-  for userName, movieID, ratingValue in zip(userList, movieList, ratingList):
-    movieRatingsByUsers[userName, movieID] = ratingValue
-
-  print("completed loading data")
   return movieRatingsByUsers
 
 def main():
   ## read ratings
-  ratings_matrix = readTrainingData()
+  ratingsMatrix = readTrainingData()
 
-  n_users = ratings_matrix.shape[0]
-  n_movies = ratings_matrix.shape[1]
-  n_training_users = int(0.8 * n_users)
+  train, test = train_test_split(ratingsMatrix, test_size=0.1)
 
-  ## split test / train
-  train_ids = random.sample(range(n_users),
-                          n_training_users)
-  test_ids = set(range(n_users)) - set(train_ids)
-  test_ids = list(test_ids)
-  n_test_users = len(test_ids)
-
-  training_matrix = []
-  testing_matrix = []
-
-  for user_id in train_ids:
-    training_matrix.append(ratings_matrix[user_id, :])
-
-  for user_id in test_ids:
-    testing_matrix.append(ratings_matrix[user_id, :])
-
-
-  ## impute unknown ratings
-  imputer = Imputer(missing_values=0)
-  training_imputed_matrix = imputer.fit_transform(training_matrix)
-  testing_imputed_matrix = imputer.transform(testing_matrix)
-
-  ## imputing culls columns with zero values so we need
-  ## to chop down the original matrices
-  selected_columns = []
-  for movie_id in range(n_movies):
-    if not np.isnan(imputer.statistics_[movie_id]):
-        selected_columns.append(movie_id)
-
-  for column in selected_columns      
-  training_matrix = training_matrix[:, selected_columns]
-  testing_matrix = testing_matrix[:, selected_columns]
-
-  n_remaining_movies = training_matrix.shape[1]
-
-  # perform predictions
   knn = NearestNeighbors()
-  knn.fit(training_imputed_matrix)
+  knn.fit(train)
 
   ## Pickle model to use online later
   filename = 'knn_model.sav'
   pickle.dump(knn, open(filename, 'wb'))
-
-
 
 
 main()
