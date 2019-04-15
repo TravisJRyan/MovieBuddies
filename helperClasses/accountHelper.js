@@ -2,13 +2,35 @@ const mysql = require('mysql'); // MySQL
 const fs = require('fs'); // file system
 const secretVars = JSON.parse(fs.readFileSync('secret.json', 'utf8')); // import secret vars
 
-// Connection Object for MySQL
-const DB = mysql.createConnection({
-    host: secretVars["host"],
-    user: secretVars["user"],
-    password: secretVars["password"],
-    database: secretVars["database"]
-});
+var DB;
+
+// Function to Handle Disconnect Issue
+// Source: https://stackoverflow.com/questions/20210522/nodejs-mysql-error-connection-lost-the-server-closed-the-connection
+function handleDisconnect() {
+    DB = mysql.createConnection({
+        host: secretVars["host"],
+        user: secretVars["user"],
+        password: secretVars["password"],
+        database: secretVars["database"]
+    });
+
+    DB.connect(function (err) {
+        if (err) {
+            console.log('error when connecting to db:', err);
+            setTimeout(handleDisconnect, 2000);
+        }
+    });
+    DB.on('error', function (err) {
+        console.log('db error', err);
+        if (err.code === 'PROTOCOL_CONNECTION_LOST') {
+            handleDisconnect();
+        } else {
+            throw err;
+        }
+    });
+}
+
+handleDisconnect();
 
 //TODO: function validates a login attempt
 module.exports.authenticate = function (email, password, callback) {
@@ -16,15 +38,12 @@ module.exports.authenticate = function (email, password, callback) {
     let existingUserQuery = DB.query(existingUserSql, (err, results) => {
         if (err) {
             console.log(err);
-            DB.end();
             callback([]);
-        }else{
-            if (results[0] == undefined){ // no user, send to 404
-              DB.end();
-              callback('404');
-            }else{
-              DB.end();
-              callback(results);
+        } else {
+            if (results[0] == undefined) { // no user, send to 404
+                callback('404');
+            } else {
+                callback(results);
             }
         }
     });
@@ -34,9 +53,8 @@ module.exports.authenticate = function (email, password, callback) {
 // function processes a new account creation
 module.exports.createAccount = function (first, last, email, password, callback) {
     // return false if null values
-    if (!first || !last || !email || !password){
-      DB.end();
-      callback(false);
+    if (!first || !last || !email || !password) {
+        callback(false);
     }
 
     //insert query
@@ -45,12 +63,10 @@ module.exports.createAccount = function (first, last, email, password, callback)
 
     let newUserQuery = DB.query(newUserSQL, (err, results) => {
         if (err) {
-          console.log(err);
-          DB.end();
-          callback(false);
-        }else{
-          DB.end();
-          callback(true);
+            console.log(err);
+            callback(false);
+        } else {
+            callback(true);
         }
     });
 }
@@ -60,39 +76,35 @@ module.exports.createAccount = function (first, last, email, password, callback)
 // Otherwise, return null
 module.exports.getUser = function (email, callback) {
     // return null if no email
-    if (email == NULL){
-      DB.end();      
-      callback(null);
-    }else{
-      // Select query
-      let selectUserSQL = "SELECT firstName, lastName, age, gender, " +
-          "city, st, profileDescription, privacy FROM users WHERE email='" + email + "';";
-
-      let selectUserQuery = DB.query(selectUserSQL, (err, results) => {
-          if (err) {
-            console.log(err);
-            DB.end();
-            callback(null);
-          }else{
-              if (results[0] == undefined){ // no user, send to 404
-                DB.end();
-                res.render('404');
-              }else{  // return user information
-                  let user = { "email": email,
-                      "firstName": results[0].firstName,
-                      "lastName": results[0].lastName,
-                      "age": results[0].age,
-                      "gender": results[0].gender,
-                      "city": results[0].city,
-                      "st": results[0].st,
-                      "profileDescription": results[0].profileDescription,
-                      "privacy" : results[0].privacy };
-                      
-                  DB.end();
-                  callback(user);
-              }
-          }
-      });
+    if (email == NULL) {
+        callback(null);
+    } else {
+        // Select query
+        let selectUserSQL = "SELECT firstName, lastName, age, gender, " +
+            "city, st, profileDescription, privacy FROM users WHERE email='" + email + "';";
+        let selectUserQuery = DB.query(selectUserSQL, (err, results) => {
+            if (err) {
+                console.log(err);
+                callback(null);
+            } else {
+                if (results[0] == undefined) { // no user, send to 404
+                    res.render('404');
+                } else {  // return user information
+                    let user = {
+                        "email": email,
+                        "firstName": results[0].firstName,
+                        "lastName": results[0].lastName,
+                        "age": results[0].age,
+                        "gender": results[0].gender,
+                        "city": results[0].city,
+                        "st": results[0].st,
+                        "profileDescription": results[0].profileDescription,
+                        "privacy": results[0].privacy
+                    };
+                    callback(user);
+                }
+            }
+        });
     }
 }
 
@@ -110,40 +122,33 @@ module.exports.updatePrivacySettings = function (email, privacyOption, callback)
 //function processes a new friend request being sent
 module.exports.sendFriendRequest = function (senderEmail, receiverEmail, callback) {
 
-    if (senderEmail == NULL || receiverEmail == NULL){ // Check for Null values
-      DB.end();
-      callback(false);
-    }else{
+    if (senderEmail == NULL || receiverEmail == NULL) { // Check for Null values
+        callback(false);
+    } else {
         // Check for existing friendship
-        let checkExistingSQL = "SELECT * FROM friends WHERE sender='"+senderEmail + "' AND receiver='"+receiverEmail
-                                +"UNION" +
-                                "SELECT * FROM friends WHERE receiver='"+senderEmail+"' AND receiver='"+senderEmail+"';";
+        let checkExistingSQL = "SELECT * FROM friends WHERE sender='" + senderEmail + "' AND receiver='" + receiverEmail
+            + "UNION" +
+            "SELECT * FROM friends WHERE receiver='" + senderEmail + "' AND receiver='" + senderEmail + "';";
 
         let checkExistingQuery = DB.query(checkExistingSQL, (err, results) => {
             if (err) {
-              console.log(err);
-              DB.end();
-              callback(false);
-            }else{
-              if (results[0] == undefined) { // If no friendship, create new
-
-                let addNewFriendSQL = "INSERT INTO friends (sender, receiver, friendshipStatus) VALUES('" +
-                    sendermail + "','" + receiverEmail + "',0);";
-
-                let addNewFriendQuery = DB.query(addNewFriendSQL, (err, results) => {
-                  if (err) {
-                    DB.end();
-                    console.log(err);
+                console.log(err);
+                callback(false);
+            } else {
+                if (results[0] == undefined) { // If no friendship, create new
+                    let addNewFriendSQL = "INSERT INTO friends (sender, receiver, friendshipStatus) VALUES('" +
+                        sendermail + "','" + receiverEmail + "',0);";
+                    let addNewFriendQuery = DB.query(addNewFriendSQL, (err, results) => {
+                        if (err) {                           
+                            console.log(err);
+                            callback(false);
+                        } else {
+                            callback(true);
+                        }
+                    });
+                } else {  //If friendship exists, do not create new
                     callback(false);
-                  }else{
-                    DB.end();
-                    callback(true);
-                  }
-                });
-              }else{  //If friendship exists, do not create new
-                DB.end();              
-                callback(false);                
-              }
+                }
             }
         });
     }
@@ -157,7 +162,7 @@ module.exports.acceptFriendRequest = function (senderEmail, acceptingEmail, call
 
 //TODO: All pending friend requests for given user email
 module.exports.getPendingRequests = function (email, callback) {
-  callback(true);
+    callback(true);
 }
 
 
@@ -168,10 +173,8 @@ module.exports.getFriends = function (email) {
     if (email == NULL)
         return null;
     let selectRatingSQL = "SELECT * FROM ratings WHERE email='" + email + "';";
-
     let selectRatingQuery = DB.query(selectRatingSQL, (err, results) => {
         if (err) throw err;
-
         if (results[0] == undefined)
             res.render('404');
         else

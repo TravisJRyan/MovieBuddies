@@ -41,15 +41,19 @@ app.use(bodyParser.urlencoded({
     extended: true
 }));
 
+// Do not cache pages
+app.use(function (req, res, next) {
+    res.set('Cache-Control', 'no-cache, private, no-store, must-revalidate, max-stale=0, post-check=0, pre-check=0');
+    next();
+});
+
 // POST operation for logging in
 app.post("/login", function (req, res) {
     if (req.session.email) // if already logged in, do not perform operation
         res.redirect("/");
     else {
         accountHelper.authenticate(req.body.email, req.body.password, function (results) {
-            if (results == '404')
-                res.redirect("/404");
-            else if (results.length == 0) {
+            if (results == '404' || results.length == 0) {
                 res.redirect("/login?loginFailure=true");
             }
             else { // successful login
@@ -103,16 +107,16 @@ app.get("/moviesrated", function (req, res) {
     validateLoggedIn(req, res, function () {
         dataHelper.getRatings(req.session.email, function (results) {
             movieIDs = [];
-            for(var i = 0; i < results.length; i++){
+            for (var i = 0; i < results.length; i++) {
                 movieIDs.push(results[i]["movieID"]);
             }
             console.log(movieIDs);
-            getMovieData(movieIDs, function(dataResult){
+            getMovieData(movieIDs, function (dataResult) {
                 console.log(dataResult);
                 console.log(results);
                 res.render("moviesrated", {
                     movieData: dataResult,
-                    ratings : results
+                    ratings: results
                 });
             });
         });
@@ -184,48 +188,50 @@ app.get("/movie", function (req, res) {
 
 // User settings page
 app.get("/settings", function (req, res) {
-    //validateLoggedIn(req, res, function(){
-    res.render("settings"); // TODO
-    //});
+    validateLoggedIn(req, res, function () {
+        res.render("settings"); // TODO
+    });
 });
 
 // About Us page
 app.get("/about", function (req, res) {
-    //validateLoggedIn(req, res, function(){
-    res.render("about");
-    //});
+    validateLoggedIn(req, res, function () {
+        res.render("about");
+    });
 });
 
 // Browse friend requests page
 app.get("/friendrequests", function (req, res) {
-    //validateLoggedIn(req, res, function(){
-    var friendRequests = ["travis@gmail.com", "terry@gmail.com", "mary@gmail.com"];
-    res.render("friendrequests", {
-        friendRequests: friendRequests
+    validateLoggedIn(req, res, function () {
+        var friendRequests = ["travis@gmail.com", "terry@gmail.com", "mary@gmail.com"];
+        res.render("friendrequests", {
+            friendRequests: friendRequests
+        });
     });
-    //});
 });
 
 // Movie recommendation page
 app.get("/recommend", function (req, res) {
-    //validateLoggedIn(req, res, function(){
-    res.render("recommend");
-    //});
+    validateLoggedIn(req, res, function () {
+        res.render("recommend");
+    });
 });
 
 // Route for voting on a movie, then redirects to the movie's page
 app.get("/rateMovie", function (req, res) {
-    if (req.session.email && req.query.rating && req.query.movieId) {
-        dataHelper.addRating(req.session.email, req.query.movieId, req.query.rating, function (result) {
-            if (!result)
-                res.send("There was an error rating the movie.");
-            else {
-                res.redirect("/movie?id=" + req.query.movieId);
-            }
-        });
-    } else {
-        res.redirect("/");
-    }
+    validateLoggedIn(req, res, function () {
+        if (req.session.email && req.query.rating && req.query.movieId) {
+            dataHelper.addRating(req.session.email, req.query.movieId, req.query.rating, function (result) {
+                if (!result)
+                    res.send("There was an error rating the movie.");
+                else {
+                    res.redirect("/movie?id=" + req.query.movieId);
+                }
+            });
+        } else {
+            res.redirect("/");
+        }
+    });
 });
 
 // 404 Page Not Found page
@@ -289,7 +295,7 @@ function getMovieData(movieIDs, callback) {
                 callback(results);
         } else { // data is not in local file date
             request('https://www.omdbapi.com/?i=' + currentMovieID + '&apikey=b09eb4ff', function (error, response, body) {
-                if(error)
+                if (error)
                     console.log(error);
                 results[currentMovieID] = JSON.parse(body);
                 completedRequests++;
@@ -305,6 +311,7 @@ app.get("/*", function (req, res) {
     res.redirect("/404");
 });
 
+// Function validates session and redirects if not
 function validateLoggedIn(req, res, callback) {
     if (!req.session.email) {
         res.redirect("/");
