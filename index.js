@@ -110,10 +110,7 @@ app.get("/moviesrated", function (req, res) {
             for (var i = 0; i < results.length; i++) {
                 movieIDs.push(results[i]["movieID"]);
             }
-            console.log(movieIDs);
             getMovieData(movieIDs, function (dataResult) {
-                console.log(dataResult);
-                console.log(results);
                 res.render("moviesrated", {
                     movieData: dataResult,
                     ratings: results
@@ -203,9 +200,12 @@ app.get("/about", function (req, res) {
 // Browse friend requests page
 app.get("/friendrequests", function (req, res) {
     validateLoggedIn(req, res, function () {
-        var friendRequests = ["travis@gmail.com", "terry@gmail.com", "mary@gmail.com"];
-        res.render("friendrequests", {
-            friendRequests: friendRequests
+        accountHelper.getPendingRequests(req.session.email, function(results){
+            console.log(results);
+            //var friendRequests = ["travis@gmail.com", "terry@gmail.com", "mary@gmail.com"];
+            res.render("friendrequests", {
+                friendRequests: results
+            });
         });
     });
 });

@@ -162,7 +162,13 @@ module.exports.acceptFriendRequest = function (senderEmail, acceptingEmail, call
 
 //TODO: All pending friend requests for given user email
 module.exports.getPendingRequests = function (email, callback) {
-    callback(true);
+    if(!email)
+        callback([]);
+    let selectPendingSql = "SELECT sender FROM Friends WHERE receiver = '"+email+"' AND friendshipStatus = 0;"
+    let selectPendingQuery = DB.query(selectPendingSql, (err, results) => {
+        if (err) throw err;
+        callback(results);
+    });
 }
 
 
