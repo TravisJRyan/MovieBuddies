@@ -1,22 +1,12 @@
-##  Copyright 2018 Ronald J. Nowling
-##  Licensed under the Apache License, Version 2.0 (the "License");
-##  you may not use this file except in compliance with the License.
-##  You may obtain a copy of the License at
-##      http://www.apache.org/licenses/LICENSE-2.0
-##  Unless required by applicable law or agreed to in writing, software
-##  distributed under the License is distributed on an "AS IS" BASIS,
-##  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-##  See the License for the specific language governing permissions and
-##  limitations under the License.
+## Movie Buddies Development Team:
+## Travis Ryan, Terry James, Mary Odenthal
+## Script to train knn model on Movielens user data
+## 27M ratings train/test split and saved states of objects
 
-## Modifications applied by MoviesBuddies Development Team
-## original implementation available at https://github.com/rnowling/rec-sys-experiments
 
 import numpy as np
 import random
 from sklearn.neighbors import NearestNeighbors
-from sklearn.metrics import mean_squared_error
-from sklearn.preprocessing import Imputer
 import csv
 import scipy.sparse as sp
 import os.path
@@ -35,7 +25,7 @@ def readTrainingData():
   movieList = []
   ratingList = []
 
-  print("begin loading data")
+  print("Start loading user rating data")
   with open(path) as csvFile:
     for line in csvFile:
       userName, movieID, ratingValue = line.strip().split(",")
@@ -44,21 +34,44 @@ def readTrainingData():
       ratingList.append(int(ratingValue))
 
   movieRatingsByUsers = sp.coo_matrix((ratingList, (userList, movieList)))
+  print("Completed loading user rating data")
 
   return movieRatingsByUsers
 
 def main():
+
   ## read ratings
   ratingsMatrix = readTrainingData()
 
-  train, test = train_test_split(ratingsMatrix, test_size=0.1)
+  print("Start test/train split")
+  train, test = train_test_split(ratingsMatrix, test_size=0.2)
+  print("Completed")
 
+
+  print("Start training model")
   knn = NearestNeighbors()
   knn.fit(train)
+  print("Completed")
+  
 
+  print("Start saving model")
   ## Pickle model to use online later
-  filename = 'knn_model.sav'
-  pickle.dump(knn, open(filename, 'wb'))
+  modelFilename = 'knn_model.sav'
+  pickle.dump(knn, open(modelFilename, 'wb'))
+  print("Completed")
 
+
+  print("Start saving training data")
+  ## Pickle test set for testing later
+  trainFilename = 'training_users.sav'
+  pickle.dump(train, open(trainFilename, 'wb'))
+  print("Completed")
+  
+
+  print("Start saving test data")
+  ## Pickle test set for testing later
+  testFilename = 'test_users.sav'
+  pickle.dump(test, open(testFilename, 'wb'))
+  print("Completed")
 
 main()

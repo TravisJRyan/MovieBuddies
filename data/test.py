@@ -1,13 +1,20 @@
-import pickle 
+import recommend
+import pickle
 
 
 def main():
-    filename = 'knn_model.sav'
+    maps = recommend.createMap()
+
+    movieToImdb = maps[0]
+    imdbToMovie = maps[1]
+
+    print("Start loading test users")
+    filename = 'test_users.sav'
     filehandler = open(filename, 'r') 
-    object = pickle.load(filehandler)
+    test_users = pickle.load(filehandler)
+    print("Completed")
 
-    print(object)
-
+    neighbors = recommend.getRecommendations(0, test_users.getrow(1))
 
 
 main()
