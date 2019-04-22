@@ -168,6 +168,18 @@ app.get("/search", function (req, res) {
     });
 });
 
+app.get("/addfriend", function(req, res){
+    validateLoggedIn(req, res, function(){
+        if(req.query.receiver && req.session.email==req.query.sender){
+            accountHelper.newFriendRequest(req.query.sender, req.query.receiver, function(results){
+                res.redirect("/userPage?email="+req.query.receiver);
+            });
+        } else{
+            res.redirect("/404");
+        }
+    });
+});
+
 // Movie page
 app.get("/movie", function (req, res) {
     validateLoggedIn(req, res, function () {

@@ -49,6 +49,22 @@ module.exports.authenticate = function (email, password, callback) {
     });
 };
 
+// function to add a new friend
+module.exports.newFriendRequest = function(sender, receiver, callback) {
+    if(!sender || !receiver)
+        callback(-1);
+    else{
+        let newFriendSql = "INSERT INTO Friends VALUES('"+sender+"', '"+receiver+"', 0);";
+        let newFriendQuery = DB.query(newFriendSql, (err, results) => {
+            if (err) {
+                console.log(err);
+                callback(-1);
+            } else {
+                callback(results);
+            }
+        });
+    }
+}
 
 // function processes a new account creation
 module.exports.createAccount = function (first, last, email, password, callback) {
