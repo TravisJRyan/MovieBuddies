@@ -139,7 +139,7 @@ module.exports.sendFriendRequest = function (senderEmail, receiverEmail, callbac
                     let addNewFriendSQL = "INSERT INTO friends (sender, receiver, friendshipStatus) VALUES('" +
                         sendermail + "','" + receiverEmail + "',0);";
                     let addNewFriendQuery = DB.query(addNewFriendSQL, (err, results) => {
-                        if (err) {                           
+                        if (err) {
                             console.log(err);
                             callback(false);
                         } else {
@@ -154,10 +154,19 @@ module.exports.sendFriendRequest = function (senderEmail, receiverEmail, callbac
     }
 }
 
-module.exports.validateUserExists = function(email, callback) {
-    if(!email)
+module.exports.validateUserExists = function (email, callback) {
+    if (!email)
         callback(false);
-    //let validateUserSql = SELECT email FROM Users WHERE email = 'test@test.com';
+    else {
+        let validateUserSql = "SELECT email FROM Users WHERE email = '" + email + "';";
+        let validateUserQuery = DB.query(validateUserSql, (err, results) => {
+            if (err) throw err;
+            if (results.length > 0)
+                callback(true);
+            else
+                callback(false);
+        });
+    }
 }
 
 module.exports.declineFriendship = function (senderEmail, receiverEmail, callback) {
@@ -171,9 +180,9 @@ module.exports.addFriendship = function (senderEmail, acceptingEmail, callback) 
 
 //TODO: All pending friend requests for given user email
 module.exports.getPendingRequests = function (email, callback) {
-    if(!email)
+    if (!email)
         callback([]);
-    let selectPendingSql = "SELECT sender FROM Friends WHERE receiver = '"+email+"' AND friendshipStatus = 0;"
+    let selectPendingSql = "SELECT sender FROM Friends WHERE receiver = '" + email + "' AND friendshipStatus = 0;"
     let selectPendingQuery = DB.query(selectPendingSql, (err, results) => {
         if (err) throw err;
         callback(results);

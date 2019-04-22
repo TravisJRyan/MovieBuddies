@@ -270,8 +270,8 @@ app.get("/userPage", function (req, res) {
             res.redirect("/404");
         } else {
             dataHelper.getRecentRatings(req.query.email, function (results) {
-                accountHelper.validateUserExists(req.query.email, function (results) {
-                    if (!results)
+                accountHelper.validateUserExists(req.query.email, function (userExistsResults) {
+                    if (userExistsResults==false)
                         res.redirect("/404"); // user does not exist
                     else { // user exists
                         if (results == -1) // SQL error
