@@ -171,15 +171,38 @@ module.exports.addFriendship = function (senderEmail, acceptingEmail, callback) 
     callback(true);
 }
 
-// TO DO: FINISH THIS
+// get all friends for a given email
+module.exports.getFriends = function(email, callback){
+    if(!email)
+        callback([]);
+    else{
+        let getFriendsSql = "SELECT sender, receiver FROM friends WHERE (sender = '"+email+"') OR (receiver = '"+email+"') "+
+                            "AND friendshipStatus = 1;"
+        let getFriendsQuery = DB.query(getFriendsSql, (err, results) => {
+            if (err) throw err;
+            if(results.length==0)
+                callback([]);
+            else{
+                callback(results);
+            }  
+        });
+    }
+}
+
+// check friend status (none/pending/accepted) for 2 given users
 module.exports.isFriend = function(firstEmail, secondEmail, callback){
     if (!firstEmail || !secondEmail)
-        callback(false);
+        callback(-1);
     else{
-        let isFriendSql = "";
+        let isFriendSql = "SELECT friendshipStatus FROM friends WHERE (sender = '"+firstEmail+"' AND receiver = '"+secondEmail+"') OR "+
+                        "(sender = '"+secondEmail+"' AND receiver = '"+firstEmail+"')";
         let isFriendQuery = DB.query(isFriendSql, (err, results) => {
             if (err) throw err;
-            callback(results);
+            if(results.length==0)
+                callback(-1); //callback -1 if no friend requests ever sent
+            else{
+                callback(results[0]['friendshipStatus']); //callback 0 or 1 based on friendship status (pending/accepted)
+            }  
         });
     }
 }
@@ -193,25 +216,4 @@ module.exports.getPendingRequests = function (email, callback) {
         if (err) throw err;
         callback(results);
     });
-}
-
-
-
-//TODO: **QUERY** find friend as either sender or receiver
-// function returns all friend emails for a given user
-module.exports.getFriends = function (email) {
-    if (email == NULL)
-        return null;
-    let selectRatingSQL = "SELECT * FROM ratings WHERE email='" + email + "';";
-    let selectRatingQuery = DB.query(selectRatingSQL, (err, results) => {
-        if (err) throw err;
-        if (results[0] == undefined)
-            res.render('404');
-        else
-            return {
-                "email": email,
-                "ratings": results
-            };
-    });
-    return null;
 }

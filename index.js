@@ -225,7 +225,6 @@ app.get("/about", function (req, res) {
 app.get("/friendrequests", function (req, res) {
     validateLoggedIn(req, res, function () {
         accountHelper.getPendingRequests(req.session.email, function (results) {
-            console.log(results);
             res.render("friendrequests", {
                 friendRequests: results,
                 userEmail: req.session.email
@@ -263,6 +262,18 @@ app.get("/404", function (req, res) {
     res.render("404");
 });
 
+// Route to view all friends
+app.get("/friends", function(req, res){
+    validateLoggedIn(req, res, function() {
+        accountHelper.getFriends(req.session.email, function(results){
+            res.render("friends", {
+               friends: results,
+               userEmail: req.session.email
+            });
+        });
+    });
+});
+
 //Route to userPage
 app.get("/userPage", function (req, res) {
     validateLoggedIn(req, res, function () {
@@ -271,7 +282,7 @@ app.get("/userPage", function (req, res) {
         } else {
             dataHelper.getRecentRatings(req.query.email, function (results) {
                 accountHelper.validateUserExists(req.query.email, function (userExistsResults) {
-                    accountHelper.isFriend(req.query.email, req.session.username, function (isFriend) {
+                    accountHelper.isFriend(req.query.email, req.session.email, function (isFriend) {
                         var friendshipExists = isFriend;
                         if (userExistsResults == false)
                             res.redirect("/404"); // user does not exist
@@ -282,7 +293,8 @@ app.get("/userPage", function (req, res) {
                                 res.render("userPage", {
                                     movies: [],
                                     email: req.query.email,
-                                    friendshipExists: friendshipExists
+                                    friendshipExists: friendshipExists,
+                                    userEmail: req.session.email
                                 });
                             }
                             else {
@@ -302,7 +314,8 @@ app.get("/userPage", function (req, res) {
                                             res.render("userPage", {
                                                 movies: movies, // render page with movies data
                                                 email: req.query.email,
-                                                friendshipExists: friendshipExists
+                                                friendshipExists: friendshipExists,
+                                                userEmail: req.session.email
                                             });
                                         }
                                     });

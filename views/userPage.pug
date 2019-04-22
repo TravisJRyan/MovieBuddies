@@ -22,6 +22,8 @@ body
                   a.navbar-brand(href='/settings') Profile Settings  
                 li.customLinks
                   a.navbar-brand(href='/recommend') View Recommendations
+                li.customLinks
+                  a.navbar-brand(href='/friends') Friends
                 li.customLinks           
                   a.navbar-brand(href='/logout') Logout
               form.form-inline.my-2.my-lg-0.ml-lg-5(action="/search")
@@ -36,6 +38,11 @@ body
           .card-body
             h5.card-title#accountHolderName=email
             p.card-text#accountHolderBio bio information
+        if(friendshipExists==-1)
+          if(email!=userEmail)
+            button.btn.btn-outline-success Add Friend
+        if(friendshipExists==1)
+          p(style="color: green") You are Friends!
       .col-sm-6.col-md-9.col-lg-9
         .mt-2
           table.table.borderless.table-hover#lastFive
