@@ -2,13 +2,32 @@ const mysql = require('mysql'); // MySQL
 const fs = require('fs'); // file system
 const secretVars = JSON.parse(fs.readFileSync('secret.json', 'utf8')); // import secret vars
 
-// Connection Object for MySQL
-const DB = mysql.createConnection({
-    host: secretVars["host"],
-    user: secretVars["user"],
-    password: secretVars["password"],
-    database: secretVars["database"]
-});
+// Source: https://stackoverflow.com/questions/20210522/nodejs-mysql-error-connection-lost-the-server-closed-the-connection
+function handleDisconnect() {
+    DB = mysql.createConnection({
+        host: secretVars["host"],
+        user: secretVars["user"],
+        password: secretVars["password"],
+        database: secretVars["database"]
+    });
+
+    DB.connect(function (err) {
+        if (err) {
+            console.log('error when connecting to db:', err);
+            setTimeout(handleDisconnect, 2000);
+        }
+    });
+    DB.on('error', function (err) {
+        console.log('db error', err);
+        if (err.code === 'PROTOCOL_CONNECTION_LOST') {
+            handleDisconnect();
+        } else {
+            throw err;
+        }
+    });
+}
+
+handleDisconnect();
 
 // TODO: function takes a user's email and returns a list of IMDB ID's for recommended movies by using ML
 module.exports.recommend = function(email){

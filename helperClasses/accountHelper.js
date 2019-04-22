@@ -154,8 +154,17 @@ module.exports.sendFriendRequest = function (senderEmail, receiverEmail, callbac
     }
 }
 
-//TODO: function processes the accepting of a friend request
-module.exports.acceptFriendRequest = function (senderEmail, acceptingEmail, callback) {
+module.exports.validateUserExists = function(email, callback) {
+    if(!email)
+        callback(false);
+    //let validateUserSql = SELECT email FROM Users WHERE email = 'test@test.com';
+}
+
+module.exports.declineFriendship = function (senderEmail, receiverEmail, callback) {
+    callback(true);
+}
+
+module.exports.addFriendship = function (senderEmail, acceptingEmail, callback) {
     callback(true);
 }
 
