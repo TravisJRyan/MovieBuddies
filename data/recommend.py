@@ -22,7 +22,7 @@ def getRecommendations(userID, ratingsData):
 
   something = getHighestRated(neighbors)
 
-  return ()
+  return (something)
 
 def getHighestRated(neighbors):
   print("Get highestRated")
@@ -54,5 +54,5 @@ def getHighestRated(neighbors):
   for movie in movie8:
     movies.append(movie)
 
-  print(movies)
+  return(movies)
   
