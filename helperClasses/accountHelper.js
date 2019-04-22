@@ -71,7 +71,6 @@ module.exports.createAccount = function (first, last, email, password, callback)
     });
 }
 
-//TODO: TESTING
 // get all of user's information for given email
 // Otherwise, return null
 module.exports.getUser = function (email, callback) {
@@ -108,14 +107,9 @@ module.exports.getUser = function (email, callback) {
     }
 }
 
-//TODO: update all fields
+//TODO: update all fields for user's settings
 module.exports.updateUser = function (email, ) {
 
-}
-
-//TODO: function processes an update of a user's privacy setting
-module.exports.updatePrivacySettings = function (email, privacyOption, callback) {
-    return true;
 }
 
 //TODO: TESTING
@@ -177,8 +171,20 @@ module.exports.addFriendship = function (senderEmail, acceptingEmail, callback) 
     callback(true);
 }
 
+// TO DO: FINISH THIS
+module.exports.isFriend = function(firstEmail, secondEmail, callback){
+    if (!firstEmail || !secondEmail)
+        callback(false);
+    else{
+        let isFriendSql = "";
+        let isFriendQuery = DB.query(isFriendSql, (err, results) => {
+            if (err) throw err;
+            callback(results);
+        });
+    }
+}
 
-//TODO: All pending friend requests for given user email
+// Get all pending friend requests for a given user
 module.exports.getPendingRequests = function (email, callback) {
     if (!email)
         callback([]);

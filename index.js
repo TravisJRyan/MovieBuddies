@@ -271,40 +271,45 @@ app.get("/userPage", function (req, res) {
         } else {
             dataHelper.getRecentRatings(req.query.email, function (results) {
                 accountHelper.validateUserExists(req.query.email, function (userExistsResults) {
-                    if (userExistsResults==false)
-                        res.redirect("/404"); // user does not exist
-                    else { // user exists
-                        if (results == -1) // SQL error
-                            res.send("An error occurred gathering user ratings.");
-                        else if (results.length == 0) { // TODO : make it impossible to visit nonexistant user's pages
-                            res.render("userPage", {
-                                movies: [],
-                                email: req.query.email
-                            });
-                        }
-                        else {
-                            var requestNumber = results.length;
-                            var requestComplete = 0;
-                            var movies = []; // an array of length-3 arrays (image/title/rating)
-                            for (let i = 0; i < results.length; i++) {
-                                request('https://www.omdbapi.com/?i=' + results[i]["movieID"] + '&apikey=b09eb4ff', function (error, response, body) {
-                                    requestComplete++;
-                                    var image = JSON.parse(body)["Poster"];
-                                    var title = JSON.parse(body)["Title"];
-                                    var id = JSON.parse(body)["imdbID"];
-                                    var movie = [image, title, id, results[i]["rating"], results[i]["datetime"]];
-                                    movies.push(movie); // push image/title/rating (length 3 array) to movies array
-                                    if (requestComplete == requestNumber) { // all requests complete
-                                        movies.sort(function (a, b) { return a[4] < b[4] });
-                                        res.render("userPage", {
-                                            movies: movies, // render page with movies data
-                                            email: req.query.email
-                                        });
-                                    }
+                    accountHelper.isFriend(req.query.email, req.session.username, function (isFriend) {
+                        var friendshipExists = isFriend;
+                        if (userExistsResults == false)
+                            res.redirect("/404"); // user does not exist
+                        else { // user exists
+                            if (results == -1) // SQL error
+                                res.send("An error occurred gathering user ratings.");
+                            else if (results.length == 0) { // TODO : make it impossible to visit nonexistant user's pages
+                                res.render("userPage", {
+                                    movies: [],
+                                    email: req.query.email,
+                                    friendshipExists: friendshipExists
                                 });
                             }
+                            else {
+                                var requestNumber = results.length;
+                                var requestComplete = 0;
+                                var movies = []; // an array of length-3 arrays (image/title/rating)
+                                for (let i = 0; i < results.length; i++) {
+                                    request('https://www.omdbapi.com/?i=' + results[i]["movieID"] + '&apikey=b09eb4ff', function (error, response, body) {
+                                        requestComplete++;
+                                        var image = JSON.parse(body)["Poster"];
+                                        var title = JSON.parse(body)["Title"];
+                                        var id = JSON.parse(body)["imdbID"];
+                                        var movie = [image, title, id, results[i]["rating"], results[i]["datetime"]];
+                                        movies.push(movie); // push image/title/rating (length 3 array) to movies array
+                                        if (requestComplete == requestNumber) { // all requests complete
+                                            movies.sort(function (a, b) { return a[4] < b[4] });
+                                            res.render("userPage", {
+                                                movies: movies, // render page with movies data
+                                                email: req.query.email,
+                                                friendshipExists: friendshipExists
+                                            });
+                                        }
+                                    });
+                                }
+                            }
                         }
-                    }
+                    });
                 });
             });
         }
