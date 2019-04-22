@@ -38,10 +38,38 @@ def readTrainingData():
 
   return movieRatingsByUsers
 
+## Creates map of movie lens ID to IMDB ID
+def createMap():
+
+  my_path = os.path.abspath(os.path.dirname(__file__))
+  path = os.path.join(my_path, "../ML/links.csv")
+
+  movieToImdb = {}
+  ImdbToMovie = {}
+
+  print("Start loading map data")
+  with open(path) as csvFile:
+    for line in csvFile:
+
+      movieID, imdbID, discardID = line.strip().split(",")
+
+      ## Convert ImdbID for use in URL
+      while(len(imdbID) < 8):
+        imdbID = "0" + imdbID
+      imdbID = "tt" + imdbID
+
+      movieToImdb[movieID] = imdbID
+      ImdbToMovie[imdbID] = movieID
+  print("Finish loading map data")
+  
+  return (movieToImdb, ImdbToMovie)
+
 def main():
 
   ## read ratings
   ratingsMatrix = readTrainingData()
+
+  print(ratingsMatrix.shape)
 
   print("Start test/train split")
   train, test = train_test_split(ratingsMatrix, test_size=0.2)
@@ -73,5 +101,9 @@ def main():
   testFilename = 'test_users.sav'
   pickle.dump(test, open(testFilename, 'wb'))
   print("Completed")
+
+  maps = createMap()
+
+  
 
 main()
