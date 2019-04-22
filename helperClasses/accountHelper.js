@@ -192,7 +192,7 @@ module.exports.getFriends = function(email, callback){
     if(!email)
         callback([]);
     else{
-        let getFriendsSql = "SELECT sender, receiver FROM friends WHERE (sender = '"+email+"') OR (receiver = '"+email+"') "+
+        let getFriendsSql = "SELECT sender, receiver FROM friends WHERE ((sender = '"+email+"') OR (receiver = '"+email+"')) "+
                             "AND friendshipStatus = 1;"
         let getFriendsQuery = DB.query(getFriendsSql, (err, results) => {
             if (err) throw err;
