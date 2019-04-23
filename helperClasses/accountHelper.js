@@ -49,6 +49,22 @@ module.exports.authenticate = function (email, password, callback) {
     });
 };
 
+// function to add a new friend
+module.exports.newFriendRequest = function(sender, receiver, callback) {
+    if(!sender || !receiver)
+        callback(-1);
+    else{
+        let newFriendSql = "INSERT INTO Friends VALUES('"+sender+"', '"+receiver+"', 0);";
+        let newFriendQuery = DB.query(newFriendSql, (err, results) => {
+            if (err) {
+                console.log(err);
+                callback(-1);
+            } else {
+                callback(results);
+            }
+        });
+    }
+}
 
 // function processes a new account creation
 module.exports.createAccount = function (first, last, email, password, callback) {
@@ -71,7 +87,6 @@ module.exports.createAccount = function (first, last, email, password, callback)
     });
 }
 
-//TODO: TESTING
 // get all of user's information for given email
 // Otherwise, return null
 module.exports.getUser = function (email, callback) {
@@ -108,14 +123,9 @@ module.exports.getUser = function (email, callback) {
     }
 }
 
-//TODO: update all fields
+//TODO: update all fields for user's settings
 module.exports.updateUser = function (email, ) {
 
-}
-
-//TODO: function processes an update of a user's privacy setting
-module.exports.updatePrivacySettings = function (email, privacyOption, callback) {
-    return true;
 }
 
 //TODO: TESTING
@@ -139,7 +149,7 @@ module.exports.sendFriendRequest = function (senderEmail, receiverEmail, callbac
                     let addNewFriendSQL = "INSERT INTO friends (sender, receiver, friendshipStatus) VALUES('" +
                         sendermail + "','" + receiverEmail + "',0);";
                     let addNewFriendQuery = DB.query(addNewFriendSQL, (err, results) => {
-                        if (err) {                           
+                        if (err) {
                             console.log(err);
                             callback(false);
                         } else {
@@ -154,10 +164,19 @@ module.exports.sendFriendRequest = function (senderEmail, receiverEmail, callbac
     }
 }
 
-module.exports.validateUserExists = function(email, callback) {
-    if(!email)
+module.exports.validateUserExists = function (email, callback) {
+    if (!email)
         callback(false);
-    //let validateUserSql = SELECT email FROM Users WHERE email = 'test@test.com';
+    else {
+        let validateUserSql = "SELECT email FROM Users WHERE email = '" + email + "';";
+        let validateUserQuery = DB.query(validateUserSql, (err, results) => {
+            if (err) throw err;
+            if (results.length > 0)
+                callback(true);
+            else
+                callback(false);
+        });
+    }
 }
 
 module.exports.declineFriendship = function (senderEmail, receiverEmail, callback) {
@@ -178,35 +197,49 @@ module.exports.addFriendship = function (senderEmail, acceptingEmail, callback) 
     callback(true);
 }
 
-
-//TODO: All pending friend requests for given user email
-module.exports.getPendingRequests = function (email, callback) {
+// get all friends for a given email
+module.exports.getFriends = function(email, callback){
     if(!email)
         callback([]);
-    let selectPendingSql = "SELECT sender FROM Friends WHERE receiver = '"+email+"' AND friendshipStatus = 0;"
+    else{
+        let getFriendsSql = "SELECT sender, receiver FROM friends WHERE ((sender = '"+email+"') OR (receiver = '"+email+"')) "+
+                            "AND friendshipStatus = 1;"
+        let getFriendsQuery = DB.query(getFriendsSql, (err, results) => {
+            if (err) throw err;
+            if(results.length==0)
+                callback([]);
+            else{
+                callback(results);
+            }  
+        });
+    }
+}
+
+// check friend status (none/pending/accepted) for 2 given users
+module.exports.isFriend = function(firstEmail, secondEmail, callback){
+    if (!firstEmail || !secondEmail)
+        callback(-1);
+    else{
+        let isFriendSql = "SELECT friendshipStatus FROM friends WHERE (sender = '"+firstEmail+"' AND receiver = '"+secondEmail+"') OR "+
+                        "(sender = '"+secondEmail+"' AND receiver = '"+firstEmail+"')";
+        let isFriendQuery = DB.query(isFriendSql, (err, results) => {
+            if (err) throw err;
+            if(results.length==0)
+                callback(-1); //callback -1 if no friend requests ever sent
+            else{
+                callback(results[0]['friendshipStatus']); //callback 0 or 1 based on friendship status (pending/accepted)
+            }  
+        });
+    }
+}
+
+// Get all pending friend requests for a given user
+module.exports.getPendingRequests = function (email, callback) {
+    if (!email)
+        callback([]);
+    let selectPendingSql = "SELECT sender FROM Friends WHERE receiver = '" + email + "' AND friendshipStatus = 0;"
     let selectPendingQuery = DB.query(selectPendingSql, (err, results) => {
         if (err) throw err;
         callback(results);
     });
-}
-
-
-
-//TODO: **QUERY** find friend as either sender or receiver
-// function returns all friend emails for a given user
-module.exports.getFriends = function (email) {
-    if (email == NULL)
-        return null;
-    let selectRatingSQL = "SELECT * FROM ratings WHERE email='" + email + "';";
-    let selectRatingQuery = DB.query(selectRatingSQL, (err, results) => {
-        if (err) throw err;
-        if (results[0] == undefined)
-            res.render('404');
-        else
-            return {
-                "email": email,
-                "ratings": results
-            };
-    });
-    return null;
 }

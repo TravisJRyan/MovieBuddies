@@ -17,15 +17,36 @@ body
                   a.navbar-brand(href='/settings') Profile Settings  
                 li.customLinks
                   a.navbar-brand(href='/recommend') View Recommendations
+                li.customLinks
+                  a.navbar-brand(href='/friends') Friends
                 li.customLinks           
                   a.navbar-brand(href='/logout') Logout
               form.form-inline.my-2.my-lg-0.ml-lg-5(action="/search")
                   input.form-control.ml-lg-4(placeholder='Search', class="form-control" aria-label='Search', name="searchTerm")
                   button.btn.btn-outline-success.my-2.my-sm-0.ml-sm-2(type='submit') Search
-    
-    .container.mt-sm-4
-        h3 Welcome!
- 
+.container.mt-sm-4
+    h3="Friends"
+    .table-wrapper-scroll-y.my-custom-scrollbar
+        table.table.table-striped.center
+            if(friends)
+                thead.thead-dark
+                    tr
+                        th Email
+                    tbody
+                        for friend in friends
+                            if(friend["sender"]!=userEmail)
+                                tr
+                                    td
+                                        a(href="/userPage?email="+friend["sender"])
+                                            p=friend["sender"]
+                            if(friend["receiver"]!=userEmail)
+                                tr
+                                    td
+                                        a(href="/userPage?email="+friend["receiver"])
+                                            p=friend["receiver"]
+            else
+                h3="No results found!"
+
     // Import JQuery, Popper, and Bootstrap Javascript files
     script(src='https://code.jquery.com/jquery-3.2.1.slim.min.js' integrity='sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN' crossorigin='anonymous')
     script(src='https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js' integrity='sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q' crossorigin='anonymous')
