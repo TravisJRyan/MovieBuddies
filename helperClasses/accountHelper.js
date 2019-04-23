@@ -39,7 +39,7 @@ module.exports.authenticate = function (email, password, callback) {
     let existingUserQuery = DB.query(existingUserSql, (err, results) => {
         console.log(results[0]);
         console.log(results.pass);
-        bcrypt.compare(password, results[0].pass, function(err, res) {
+        bcrypt.compare(password, results[0].pass, function (err, res) {
             if (err) {
                 console.log(err);
                 callback([]);
@@ -186,21 +186,27 @@ module.exports.validateUserExists = function (email, callback) {
 }
 
 module.exports.declineFriendship = function (senderEmail, receiverEmail, callback) {
-    let removeRequest = "DELETE FROM friends WHERE  sender = '"+senderEmail+"' and receiver = '"+receiverEmail+"';"
+    let removeRequest = "DELETE FROM friends WHERE  sender = '" + senderEmail + "' and receiver = '" + receiverEmail + "';"
     let removeQuery = DB.query(removeRequest, (err, results) => {
-        if (err) throw err;
-        callback(false);
+        if (err){
+            throw err;
+            callback(false);
+        }else{
+            callback(true);
+        }
     });
-    callback(true);
 }
 
 module.exports.addFriendship = function (senderEmail, acceptingEmail, callback) {
-    let updateFriendStatus = "Update friends Set friendshipStatus = 1 WHERE receiver = '"+acceptingEmail+"';"
+    let updateFriendStatus = "Update friends Set friendshipStatus = 1 WHERE receiver = '" + acceptingEmail + "';"
     let updateFriendQuery = DB.query(updateFriendStatus, (err, results) => {
-        if (err) throw err;
-        callback(false);
+        if (err) {
+            throw err;
+            callback(false);
+        }else{
+            callback(true);
+        }
     });
-    callback(true);
 }
 
 // get all friends for a given email
