@@ -9,7 +9,7 @@ from sklearn.neighbors import NearestNeighbors
 
 
 ## Returns 5 nearest neighbors of given user data
-def getRecommendations(userID, ratingsData):
+def getRecommendations(ratingsData):
 
   ## load knn model
   modelFilename = 'knn_model.sav'
@@ -20,9 +20,9 @@ def getRecommendations(userID, ratingsData):
   data = knn.kneighbors(ratingsData, 5)
   neighbors = data[1][0]
 
-  something = getHighestRated(neighbors)
+  recommendations = getHighestRated(neighbors)
 
-  return (something)
+  return (recommendations)
 
 def getHighestRated(neighbors):
   print("Get highestRated")
@@ -35,8 +35,6 @@ def getHighestRated(neighbors):
   movie8 = []
 
   for neigh in neighbors:
-    print(neigh)
-    print(userRatings.getrow(neigh))
     for movie in userRatings.getrow(neigh).nonzero()[1]:
       if userRatings[neigh, movie] > 9:
         movie10.append(movie)

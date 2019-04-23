@@ -16,7 +16,7 @@ from sklearn.model_selection import train_test_split
 
 ## Function reads ratings from .csv 
 ## and returns sparse coordinate matrix
-def readTrainingData():
+def readData():
 
   my_path = os.path.abspath(os.path.dirname(__file__))
   path = os.path.join(my_path, "../ML/newRatings2.csv")
@@ -25,13 +25,29 @@ def readTrainingData():
   movieList = []
   ratingList = []
 
+
   print("Start loading user rating data")
   with open(path) as csvFile:
+    currentUser = []
+    currentMovie = []
+    currentRating = []
+    previousUser = -1
+    ratingCount = 0
+
     for line in csvFile:
       userName, movieID, ratingValue = line.strip().split(",")
-      userList.append(int(userName))
-      movieList.append(int(movieID))
-      ratingList.append(int(ratingValue))
+      if previousUser == int(userName):
+        ratingCount = ratingCount + 1
+        currentUser.append(int(userName))
+        currentMove.append(int(movieID))
+        currentRating.append(int(ratingValue))
+
+      if ratingCount >= 15 && previousUser != userName:
+        userList.append(int(userName))
+        movieList.append(int(movieID))
+        ratingList.append(int(ratingValue))
+        ratingCount = 0
+        
 
   movieRatingsByUsers = sp.coo_matrix((ratingList, (userList, movieList)))
   print("Completed loading user rating data")
@@ -67,7 +83,7 @@ def createMap():
 def main():
 
   ## read ratings
-  ratingsMatrix = readTrainingData()
+  ratingsMatrix = readData()
 
   print(ratingsMatrix.shape)
 
