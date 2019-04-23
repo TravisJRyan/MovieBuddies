@@ -44,7 +44,7 @@ dataHelper.addRating('test@test.com', movieID, 8, function(result){
 
 // Test to get all rates for current user
 dataHelper.getRatings('test@test.com', function(result){
-
+    console.log(result);
 });
 
 
