@@ -3,6 +3,7 @@ const app = express(); // init Express server as a variable
 const session = require('express-session'); // Manages session variables
 const request = require('request'); // HTTP request module
 const fs = require('fs'); // file system
+const bcrypt = require('bcrypt'); // used for hashing passwords
 const bodyParser = require('body-parser'); // for receving POST bodies
 app.set("view engine", "pug"); // have the server use Pug to render pages
 
@@ -69,14 +70,16 @@ app.post("/register", function (req, res) {
     if (req.session.email) // if already logged in, do not perform operation
         res.redirect("/");
     else if (req.body.first && req.body.last && req.body.email && req.body.password) {
-        accountHelper.createAccount(req.body.first, req.body.last, req.body.email, req.body.password, function (result) {
-            if (result) {
-                req.session.email = req.body.email;
-                res.redirect("/userPage?email=" + req.session.email);
-            } else {
-                res.send("Failed to register.");
-            }
-        });
+        bcrypt.hash(req.body.password, 10, function (err, hash) {
+            accountHelper.createAccount(req.body.first, req.body.last, req.body.email, hash, function (result) {
+                if (result) {
+                    req.session.email = req.body.email;
+                    res.redirect("/userPage?email=" + req.session.email);
+                } else {
+                    res.send("Failed to register.");
+                }
+            });
+        })
     } else {
         res.send("Please supply all fields for registration")
     }
@@ -101,6 +104,30 @@ app.get("/login", function (req, res) {
             loginFailure: false
         });
     }
+});
+
+app.get("/acceptRequest", function (req, res) {
+    validateLoggedIn(req, res, function () {
+        if (!req.query.sender || !req.query.receiver || (req.query.receiver != req.session.email))
+            res.redirect("/404");
+        else {
+            accountHelper.addFriendship(req.query.sender, req.query.receiver, function () {
+                res.redirect("/friendrequests");
+            });
+        }
+    });
+});
+
+app.get("/rejectRequest", function (req, res) {
+    validateLoggedIn(req, res, function () {
+        if (!req.query.sender || !req.query.receiver || (req.query.receiver != req.session.email))
+            res.redirect("/404");
+        else {
+            accountHelper.declineFriendship(req.query.sender, req.query.receiver, function () {
+                res.redirect("/friendrequests");
+            });
+        }
+    });
 });
 
 app.get("/moviesrated", function (req, res) {
@@ -140,6 +167,18 @@ app.get("/search", function (req, res) {
             });
         } else {
             res.send("Please provide a search term.");
+        }
+    });
+});
+
+app.get("/addfriend", function (req, res) {
+    validateLoggedIn(req, res, function () {
+        if (req.query.receiver && req.session.email == req.query.sender) {
+            accountHelper.newFriendRequest(req.query.sender, req.query.receiver, function (results) {
+                res.redirect("/userPage?email=" + req.query.receiver);
+            });
+        } else {
+            res.redirect("/404");
         }
     });
 });
@@ -200,11 +239,10 @@ app.get("/about", function (req, res) {
 // Browse friend requests page
 app.get("/friendrequests", function (req, res) {
     validateLoggedIn(req, res, function () {
-        accountHelper.getPendingRequests(req.session.email, function(results){
-            console.log(results);
-            //var friendRequests = ["travis@gmail.com", "terry@gmail.com", "mary@gmail.com"];
+        accountHelper.getPendingRequests(req.session.email, function (results) {
             res.render("friendrequests", {
-                friendRequests: results
+                friendRequests: results,
+                userEmail: req.session.email
             });
         });
     });
@@ -239,6 +277,18 @@ app.get("/404", function (req, res) {
     res.render("404");
 });
 
+// Route to view all friends
+app.get("/friends", function (req, res) {
+    validateLoggedIn(req, res, function () {
+        accountHelper.getFriends(req.session.email, function (results) {
+            res.render("friends", {
+                friends: results,
+                userEmail: req.session.email
+            });
+        });
+    });
+});
+
 //Route to userPage
 app.get("/userPage", function (req, res) {
     validateLoggedIn(req, res, function () {
@@ -246,36 +296,49 @@ app.get("/userPage", function (req, res) {
             res.redirect("/404");
         } else {
             dataHelper.getRecentRatings(req.query.email, function (results) {
-                if (results == -1)
-                    res.send("An error occurred gathering user ratings.");
-                else if (results.length == 0) { // TODO : make it impossible to visit nonexistant user's pages
-                    res.render("userPage", {
-                        movies: [],
-                        email: req.query.email
-                    });
-                }
-                else {
-                    var requestNumber = results.length;
-                    var requestComplete = 0;
-                    var movies = []; // an array of length-3 arrays (image/title/rating)
-                    for (let i = 0; i < results.length; i++) {
-                        request('https://www.omdbapi.com/?i=' + results[i]["movieID"] + '&apikey=b09eb4ff', function (error, response, body) {
-                            requestComplete++;
-                            var image = JSON.parse(body)["Poster"];
-                            var title = JSON.parse(body)["Title"];
-                            var id = JSON.parse(body)["imdbID"];
-                            var movie = [image, title, id, results[i]["rating"], results[i]["datetime"]];
-                            movies.push(movie); // push image/title/rating (length 3 array) to movies array
-                            if (requestComplete == requestNumber) { // all requests complete
-                                movies.sort(function (a, b) { return a[4] < b[4] });
+                accountHelper.validateUserExists(req.query.email, function (userExistsResults) {
+                    accountHelper.isFriend(req.query.email, req.session.email, function (isFriend) {
+                        var friendshipExists = isFriend;
+                        if (userExistsResults == false)
+                            res.redirect("/404"); // user does not exist
+                        else { // user exists
+                            if (results == -1) // SQL error
+                                res.send("An error occurred gathering user ratings.");
+                            else if (results.length == 0) { // TODO : make it impossible to visit nonexistant user's pages
                                 res.render("userPage", {
-                                    movies: movies, // render page with movies data
-                                    email: req.query.email
+                                    movies: [],
+                                    email: req.query.email,
+                                    friendshipExists: friendshipExists,
+                                    userEmail: req.session.email
                                 });
                             }
-                        });
-                    }
-                }
+                            else {
+                                var requestNumber = results.length;
+                                var requestComplete = 0;
+                                var movies = []; // an array of length-3 arrays (image/title/rating)
+                                for (let i = 0; i < results.length; i++) {
+                                    request('https://www.omdbapi.com/?i=' + results[i]["movieID"] + '&apikey=b09eb4ff', function (error, response, body) {
+                                        requestComplete++;
+                                        var image = JSON.parse(body)["Poster"];
+                                        var title = JSON.parse(body)["Title"];
+                                        var id = JSON.parse(body)["imdbID"];
+                                        var movie = [image, title, id, results[i]["rating"], results[i]["datetime"]];
+                                        movies.push(movie); // push image/title/rating (length 3 array) to movies array
+                                        if (requestComplete == requestNumber) { // all requests complete
+                                            movies.sort(function (a, b) { return a[4] < b[4] });
+                                            res.render("userPage", {
+                                                movies: movies, // render page with movies data
+                                                email: req.query.email,
+                                                friendshipExists: friendshipExists,
+                                                userEmail: req.session.email
+                                            });
+                                        }
+                                    });
+                                }
+                            }
+                        }
+                    });
+                });
             });
         }
     });
