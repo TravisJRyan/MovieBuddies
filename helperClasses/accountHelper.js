@@ -186,7 +186,7 @@ module.exports.validateUserExists = function (email, callback) {
 }
 
 module.exports.declineFriendship = function (senderEmail, receiverEmail, callback) {
-    let removeRequest = "DELETE FROM friends WHERE  sender = senderEmail and receiver = receiverEmail;"
+    let removeRequest = "DELETE FROM friends WHERE  sender = '"+senderEmail+"' and receiver = '"+receiverEmail+"';"
     let removeQuery = DB.query(removeRequest, (err, results) => {
         if (err) throw err;
         callback(false);
@@ -195,7 +195,7 @@ module.exports.declineFriendship = function (senderEmail, receiverEmail, callbac
 }
 
 module.exports.addFriendship = function (senderEmail, acceptingEmail, callback) {
-    let updateFriendStatus = "Update friends Set friendshipStatus = 1 WHERE receiver = acceptingEmail;"
+    let updateFriendStatus = "Update friends Set friendshipStatus = 1 WHERE receiver = '"+acceptingEmail+"';"
     let updateFriendQuery = DB.query(updateFriendStatus, (err, results) => {
         if (err) throw err;
         callback(false);
