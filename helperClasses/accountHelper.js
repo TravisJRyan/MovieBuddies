@@ -34,6 +34,7 @@ handleDisconnect();
 
 //TODO: function validates a login attempt
 module.exports.authenticate = function (email, password, callback) {
+    bcrypt
     let existingUserSql = "SELECT * FROM users WHERE email = '" + email + "' AND pass = '" + password + "';";
     let existingUserQuery = DB.query(existingUserSql, (err, results) => {
         if (err) {
@@ -183,7 +184,7 @@ module.exports.declineFriendship = function (senderEmail, receiverEmail, callbac
     let removeRequest = "DELETE FROM friends WHERE  sender = senderEmail and receiver = receiverEmail;"
     let removeQuery = DB.query(removeRequest, (err, results) => {
         if(err) throw err;
-        callback(results);
+        callback(false);
     });
     callback(true);
 }
@@ -192,7 +193,7 @@ module.exports.addFriendship = function (senderEmail, acceptingEmail, callback) 
     let updateFriendStatus = "Update friends Set friendshipStatus = 1 WHERE receiver = acceptingEmail;"
     let updateFriendQuery = DB.query(updateFriendStatus, (err, results) => {
         if(err) throw err;
-        callback(results);
+        callback(false);
     });
     callback(true);
 }

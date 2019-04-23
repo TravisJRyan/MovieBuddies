@@ -3,6 +3,7 @@ const app = express(); // init Express server as a variable
 const session = require('express-session'); // Manages session variables
 const request = require('request'); // HTTP request module
 const fs = require('fs'); // file system
+const bcrypt = require('bcrypt'); // used for hashing passwords
 const bodyParser = require('body-parser'); // for receving POST bodies
 app.set("view engine", "pug"); // have the server use Pug to render pages
 
@@ -69,14 +70,16 @@ app.post("/register", function (req, res) {
     if (req.session.email) // if already logged in, do not perform operation
         res.redirect("/");
     else if (req.body.first && req.body.last && req.body.email && req.body.password) {
-        accountHelper.createAccount(req.body.first, req.body.last, req.body.email, req.body.password, function (result) {
-            if (result) {
-                req.session.email = req.body.email;
-                res.redirect("/userPage?email=" + req.session.email);
-            } else {
-                res.send("Failed to register.");
-            }
-        });
+        bcrypt.hash(req.body.password, 10, function (err, hash) {
+            accountHelper.createAccount(req.body.first, req.body.last, req.body.email, hash, function (result) {
+                if (result) {
+                    req.session.email = req.body.email;
+                    res.redirect("/userPage?email=" + req.session.email);
+                } else {
+                    res.send("Failed to register.");
+                }
+            });
+        })
     } else {
         res.send("Please supply all fields for registration")
     }
@@ -168,13 +171,13 @@ app.get("/search", function (req, res) {
     });
 });
 
-app.get("/addfriend", function(req, res){
-    validateLoggedIn(req, res, function(){
-        if(req.query.receiver && req.session.email==req.query.sender){
-            accountHelper.newFriendRequest(req.query.sender, req.query.receiver, function(results){
-                res.redirect("/userPage?email="+req.query.receiver);
+app.get("/addfriend", function (req, res) {
+    validateLoggedIn(req, res, function () {
+        if (req.query.receiver && req.session.email == req.query.sender) {
+            accountHelper.newFriendRequest(req.query.sender, req.query.receiver, function (results) {
+                res.redirect("/userPage?email=" + req.query.receiver);
             });
-        } else{
+        } else {
             res.redirect("/404");
         }
     });
@@ -275,12 +278,12 @@ app.get("/404", function (req, res) {
 });
 
 // Route to view all friends
-app.get("/friends", function(req, res){
-    validateLoggedIn(req, res, function() {
-        accountHelper.getFriends(req.session.email, function(results){
+app.get("/friends", function (req, res) {
+    validateLoggedIn(req, res, function () {
+        accountHelper.getFriends(req.session.email, function (results) {
             res.render("friends", {
-               friends: results,
-               userEmail: req.session.email
+                friends: results,
+                userEmail: req.session.email
             });
         });
     });
