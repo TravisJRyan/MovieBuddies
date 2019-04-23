@@ -7,7 +7,7 @@ const secretVars = JSON.parse(fs.readFileSync('secret.json', 'utf8')); // import
 const accountHelper = require("../helperClasses/accountHelper");
 const dataHelper = require("../helperClasses/dataHelper");
 
-
+// Testing success and failure to login
 accountHelper.createAccount("Terry", "James", "qweqwe@uuop.com", "test", function (result){
     if(result){
         console.log(result);
@@ -17,7 +17,7 @@ accountHelper.createAccount("Terry", "James", "qweqwe@uuop.com", "test", functio
     }
 });
 
-
+// Test to get the user data
 accountHelper.getUser("qweqwe@uuop.com", function (result){
     if(result){
         console.log(result);
@@ -27,6 +27,24 @@ accountHelper.getUser("qweqwe@uuop.com", function (result){
     }
 });
 
+// Test to send a friend request/ return True if success and False if fail
+accountHelper.sendFriendRequest('test@test.com', 'testing@test.com', function(result){
+    if(result){
+        console.log(result);
+    }
+    else{
+        console.log(result);
+    }
+});
 
+// Test for adding a rating for a movie to current user
+dataHelper.addRating('test@test.com', movieID, 8, function(result){
+
+});
+
+// Test to get all rates for current user
+dataHelper.getRatings('test@test.com', function(result){
+
+});
 
 
