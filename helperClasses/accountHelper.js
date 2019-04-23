@@ -22,7 +22,6 @@ function handleDisconnect() {
         }
     });
     DB.on('error', function (err) {
-        console.log('db error', err);
         if (err.code === 'PROTOCOL_CONNECTION_LOST') {
             handleDisconnect();
         } else {
@@ -37,8 +36,6 @@ handleDisconnect();
 module.exports.authenticate = function (email, password, callback) {
     let existingUserSql = "SELECT * FROM users WHERE email = '" + email + "';";
     let existingUserQuery = DB.query(existingUserSql, (err, results) => {
-        console.log(results[0]);
-        console.log(results.pass);
         bcrypt.compare(password, results[0].pass, function (err, res) {
             if (err) {
                 console.log(err);
@@ -47,7 +44,6 @@ module.exports.authenticate = function (email, password, callback) {
                 if (res == false) { // no user, send to 404
                     callback('404');
                 } else {
-                    console.log(results);
                     callback(results);
                 }
             }
@@ -94,11 +90,10 @@ module.exports.createAccount = function (first, last, email, password, callback)
 }
 
 // get all of user's information for given email
-// Otherwise, return null
 module.exports.getUser = function (email, callback) {
-    // return null if no email
-    if (email == NULL) {
-        callback(null);
+    // return empty if no email
+    if (!email) {
+        callback({});
     } else {
         // Select query
         let selectUserSQL = "SELECT firstName, lastName, age, gender, " +
@@ -106,10 +101,10 @@ module.exports.getUser = function (email, callback) {
         let selectUserQuery = DB.query(selectUserSQL, (err, results) => {
             if (err) {
                 console.log(err);
-                callback(null);
+                callback({});
             } else {
-                if (results[0] == undefined) { // no user, send to 404
-                    res.render('404');
+                if (results[0] == undefined) {
+                    callback({});
                 } else {  // return user information
                     let user = {
                         "email": email,
@@ -129,9 +124,17 @@ module.exports.getUser = function (email, callback) {
     }
 }
 
-//TODO: update all fields for user's settings
-module.exports.updateUser = function (email, ) {
-
+// update settings for a user
+module.exports.updateSettings = function (email, newSettings, callback) {
+    let updateUserSql = "UPDATE Users SET age="+newSettings.age+", gender='"+newSettings.gender+
+        "', city='"+newSettings.city+"', st='"+newSettings.state+"', profileDescription='"+
+        newSettings.profileDescription+"', privacy="+newSettings.privacy+" WHERE email='"+email+"';";
+    let updateSettingsQuery = DB.query(updateUserSql, (err, results) => {
+        if (err)
+            console.log(err);
+        else
+            callback(results);
+    });
 }
 
 //TODO: TESTING
