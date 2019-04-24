@@ -80,7 +80,7 @@ def createMap():
   
   return (movieToImdb, ImdbToMovie)
 
-def main():
+def trainModel():
 
   ## read ratings
   ratingsMatrix = readData()
@@ -119,7 +119,3 @@ def main():
   print("Completed")
 
   maps = createMap()
-
-  
-
-main()
