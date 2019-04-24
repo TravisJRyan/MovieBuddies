@@ -37,12 +37,21 @@ body
         .card.mt-2(style='border-style:none')
           .card-body
             h5.card-title#accountHolderName=email
-            p.card-text#accountHolderBio bio information
         if(friendshipExists==-1)
           if(email!=userEmail)
             button.btn.btn-outline-success(onclick="addFriend('"+userEmail+"','"+email+"')") Add Friend
         if(friendshipExists==1)
           p(style="color: green") You are Friends!
+        if(userData && (userData['privacy']==0 || friendshipExists==1 || userEmail==email))
+          if(userData['city'])
+            if(userData['st'])
+              p="Location: "+userData['city']+", "+userData['st']
+          if(userData['gender'])
+            p="Gender: "+userData['gender']
+          if(userData['age'])
+            p="Age: "+userData['age']
+          if(userData['profileDescription'])
+            p="Bio: "+userData['profileDescription']
       .col-sm-6.col-md-9.col-lg-9
         .mt-2
           table.table.borderless.table-hover#lastFive
