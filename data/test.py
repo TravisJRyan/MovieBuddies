@@ -17,11 +17,12 @@ def main():
 
       test = test_users.nonzero()[0]
       users = []
-      for i in range(0,1000):
+
+      #grab set of unique users in range
+      for i in range(0,25000):
             if i > 0:
                   if test[i - 1] != test[i]:
                         users.append(test[i-1])
-
 
       for user in users: 
             ## Split movie ratings in half per user
@@ -32,7 +33,7 @@ def main():
             testRatings = []
             validateRatings = []
 
-
+            #if even, put in test set, otherwise validation set
             for movie in movies:
                   if(count % 2):
                         testMovies.append(movie)
@@ -43,17 +44,17 @@ def main():
                         validateRatings.append(test_users.getrow(user)[0,movie])
                   count = count +1
 
+            #append 0 value at 193882 for correct matrix shape
             testMovies.append(193882)
             validateMovies.append(193882)
             testRatings.append(0)
             validateRatings.append(0)
 
-
+            #create matrices
             testMatrix = sp.coo_matrix((testRatings, ([0]*len(testMovies), testMovies)))
             validateMatrix = sp.coo_matrix((validateRatings, ([0]*len(validateMovies), validateMovies)))
    
-            ##Create ratings list
-
+            ##Get Recommendations and record success/failure
             recommendations = recommend.getRecommendations(testMatrix)
             currentSuccess = 0
             for movie in recommendations:
@@ -66,10 +67,12 @@ def main():
             
             total = total + 1
 
-
+      print("Successes")
       print(success)
+      print("Total Users")
       print(total)
-      print(float(success)/float(total))
+      print("Percentage Successful")
+      print(float(success)/float(total)*100)
             
 
 

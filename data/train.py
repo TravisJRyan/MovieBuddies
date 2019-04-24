@@ -31,7 +31,7 @@ def readData():
     currentUser = []
     currentMovie = []
     currentRating = []
-    previousUser = -1
+    previousUser = 1
     ratingCount = 0
 
     for line in csvFile:
@@ -39,15 +39,24 @@ def readData():
       if previousUser == int(userName):
         ratingCount = ratingCount + 1
         currentUser.append(int(userName))
-        currentMove.append(int(movieID))
+        currentMovie.append(int(movieID))
         currentRating.append(int(ratingValue))
 
-      if ratingCount >= 15 && previousUser != userName:
-        userList.append(int(userName))
-        movieList.append(int(movieID))
-        ratingList.append(int(ratingValue))
+
+      if previousUser < int(userName):
+        if ratingCount >= 15:
+          userList.extend(currentUser)
+          movieList.extend(currentMovie)
+          ratingList.extend(currentRating)
+
+        #Reset current user & previous user
+        currentUser = []
+        currentMovie = []
+        currentRating = []
+        previousUser = int(userName)
         ratingCount = 0
-        
+
+
 
   movieRatingsByUsers = sp.coo_matrix((ratingList, (userList, movieList)))
   print("Completed loading user rating data")
@@ -84,8 +93,6 @@ def main():
 
   ## read ratings
   ratingsMatrix = readData()
-
-  print(ratingsMatrix.shape)
 
   print("Start test/train split")
   train, test = train_test_split(ratingsMatrix, test_size=0.2)
