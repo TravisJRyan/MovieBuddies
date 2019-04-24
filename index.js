@@ -165,6 +165,14 @@ app.get("/", function (req, res) {
         res.redirect("userPage?email=" + req.session.email);
 });
 
+app.get("/userLookup", function(req, res){
+    validateLoggedIn(req, res, function () {
+        if(req.query.searchEmail){
+            
+        }
+    });
+});
+
 // Search results page
 app.get("/search", function (req, res) {
     validateLoggedIn(req, res, function () {
@@ -235,7 +243,17 @@ app.get("/movie", function (req, res) {
 // User settings page
 app.get("/settings", function (req, res) {
     validateLoggedIn(req, res, function () {
-        res.render("settings"); // TODO
+        accountHelper.getuser(req.session.email, function(results){
+            res.render("settings"); // TODO
+
+        });
+    });
+});
+
+// User settings page
+app.get("/userSearch", function (req, res) {
+    validateLoggedIn(req, res, function () {
+        res.render("userSearch"); // TODO
     });
 });
 
