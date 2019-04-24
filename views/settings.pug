@@ -39,23 +39,23 @@ body
           |  Not Private
           br
           h4 Bio
-          textarea.form-control#bioText(name="profileDescription" rows="5")
+          textarea.form-control#bioText(name="profileDescription" rows="5" required)
           .form-group.row
             label.col-2.col-form-label(for='example-number-input') Age
             .col-10
-              input#example-number-input.form-control(type='number' name="age" maxlength="3")
+              input#example-number-input.form-control(type='number' name="age" maxlength="3" required)
           .form-group.row
             label.col-2.col-form-label(for='example-text-input') Gender
             .col-10
-              input#example-text-input.form-control(type='text' name="gender" maxlength="1")
+              input#example-text-input.form-control(type='text' name="gender" maxlength="1" required)
           .form-group.row
             label.col-2.col-form-label(for='example-text-input') City
             .col-10
-              input#example-text-input.form-control(type='text' name="city" maxlength="20")
+              input#example-text-input.form-control(type='text' name="city" maxlength="20" required)
           .form-group.row
             label.col-2.col-form-label(for='example-text-input') State
             .col-10
-              input#example-text-input.form-control(type='text' name="state" maxlength="2")
+              input#example-text-input.form-control(type='text' name="state" maxlength="2" required)
           input.btn.btn-outline-success(type="submit")
 
 
