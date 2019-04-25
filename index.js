@@ -88,7 +88,6 @@ app.post("/register", function (req, res) {
 // POST operation for settings update
 app.post('/updatesettings', function(req, res){
     validateLoggedIn(req, res, function(){
-        console.log(req.body);
         accountHelper.updateSettings(req.session.email,req.body, function(results){
             res.redirect("/userPage?email="+req.session.email);
         });

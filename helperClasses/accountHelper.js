@@ -126,51 +126,15 @@ module.exports.getUser = function (email, callback) {
 
 // update settings for a user
 module.exports.updateSettings = function (email, newSettings, callback) {
-    let updateUserSql = "UPDATE Users SET age="+newSettings.age+", gender='"+newSettings.gender+
-        "', city='"+newSettings.city+"', st='"+newSettings.state+"', profileDescription='"+
-        newSettings.profileDescription+"', privacy="+newSettings.privacy+" WHERE email='"+email+"';";
+    let updateUserSql = "UPDATE Users SET age=" + newSettings.age + ", gender='" + newSettings.gender +
+        "', city='" + newSettings.city + "', st='" + newSettings.state + "', profileDescription='" +
+        newSettings.profileDescription + "', privacy=" + newSettings.privacy + " WHERE email='" + email + "';";
     let updateSettingsQuery = DB.query(updateUserSql, (err, results) => {
         if (err)
             console.log(err);
         else
             callback(results);
     });
-}
-
-//TODO: TESTING
-//function processes a new friend request being sent
-module.exports.sendFriendRequest = function (senderEmail, receiverEmail, callback) {
-
-    if (senderEmail == NULL || receiverEmail == NULL) { // Check for Null values
-        callback(false);
-    } else {
-        // Check for existing friendship
-        let checkExistingSQL = "SELECT * FROM friends WHERE sender='" + senderEmail + "' AND receiver='" + receiverEmail
-            + "UNION" +
-            "SELECT * FROM friends WHERE receiver='" + senderEmail + "' AND receiver='" + senderEmail + "';";
-
-        let checkExistingQuery = DB.query(checkExistingSQL, (err, results) => {
-            if (err) {
-                console.log(err);
-                callback(false);
-            } else {
-                if (results[0] == undefined) { // If no friendship, create new
-                    let addNewFriendSQL = "INSERT INTO friends (sender, receiver, friendshipStatus) VALUES('" +
-                        sendermail + "','" + receiverEmail + "',0);";
-                    let addNewFriendQuery = DB.query(addNewFriendSQL, (err, results) => {
-                        if (err) {
-                            console.log(err);
-                            callback(false);
-                        } else {
-                            callback(true);
-                        }
-                    });
-                } else {  //If friendship exists, do not create new
-                    callback(false);
-                }
-            }
-        });
-    }
 }
 
 module.exports.validateUserExists = function (email, callback) {
@@ -191,10 +155,10 @@ module.exports.validateUserExists = function (email, callback) {
 module.exports.declineFriendship = function (senderEmail, receiverEmail, callback) {
     let removeRequest = "DELETE FROM friends WHERE  sender = '" + senderEmail + "' and receiver = '" + receiverEmail + "';"
     let removeQuery = DB.query(removeRequest, (err, results) => {
-        if (err){
+        if (err) {
             throw err;
             callback(false);
-        }else{
+        } else {
             callback(true);
         }
     });
@@ -206,7 +170,7 @@ module.exports.addFriendship = function (senderEmail, acceptingEmail, callback) 
         if (err) {
             throw err;
             callback(false);
-        }else{
+        } else {
             callback(true);
         }
     });
@@ -256,5 +220,25 @@ module.exports.getPendingRequests = function (email, callback) {
     let selectPendingQuery = DB.query(selectPendingSql, (err, results) => {
         if (err) throw err;
         callback(results);
+    });
+}
+
+// function is run after unit tests to clear test data
+module.exports.clearTestData = function (callback) {
+    let clearUserSql = "DELETE FROM Users WHERE email='qweqwe@uuop.com';";
+    let clearUserQuery = DB.query(clearUserSql, (err, results) => {
+        if(err)
+            console.log(err);
+        let clearRatingSql = "DELETE FROM Ratings WHERE email='test@test.com' AND movieID='tt5460858';";
+        let clearRatingQuery = DB.query(clearRatingSql, (err, results) => {
+            if(err)
+                console.log(err);
+            let clearFriendSql="DELETE FROM Friends WHERE sender='test@test.com' AND receiver='testing@test.com';"
+            let clearFriendQuery = DB.query(clearFriendSql, (err, results) => {
+                if (err)
+                    console.log(err);
+                callback();
+            });
+        });
     });
 }

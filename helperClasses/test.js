@@ -7,44 +7,22 @@ const secretVars = JSON.parse(fs.readFileSync('secret.json', 'utf8')); // import
 const accountHelper = require("../helperClasses/accountHelper");
 const dataHelper = require("../helperClasses/dataHelper");
 
-// Testing success and failure to login
+// Running all tests in order
 accountHelper.createAccount("Terry", "James", "qweqwe@uuop.com", "test", function (result){
-    if(result){
-        console.log(result);
-    }
-    else{
-        console.log(result);
-    }
+    console.log("Account created successfully.");
+    accountHelper.getUser("qweqwe@uuop.com", function (result){
+        console.log("Account retrieved successfully");
+        accountHelper.newFriendRequest('test@test.com', 'testing@test.com', function(result){
+            console.log("Friend request created successfully");
+            dataHelper.addRating('test@test.com', 'tt5460858', 8, function(result){
+                console.log("Movie rated successfully.");
+                dataHelper.getRatings('test@test.com', function(result){
+                    console.log("Ratings retrieve successfully.");
+                    accountHelper.clearTestData(function(result){
+                        console.log("All test data cleared successfully.");
+                    });
+                });
+            });
+        });
+    });
 });
-
-// Test to get the user data
-accountHelper.getUser("qweqwe@uuop.com", function (result){
-    if(result){
-        console.log(result);
-    }
-    else{
-        console.log(result);
-    }
-});
-
-// Test to send a friend request/ return True if success and False if fail
-accountHelper.sendFriendRequest('test@test.com', 'testing@test.com', function(result){
-    if(result){
-        console.log(result);
-    }
-    else{
-        console.log(result);
-    }
-});
-
-// Test for adding a rating for a movie to current user
-dataHelper.addRating('test@test.com', movieID, 8, function(result){
-
-});
-
-// Test to get all rates for current user
-dataHelper.getRatings('test@test.com', function(result){
-    console.log(result);
-});
-
-

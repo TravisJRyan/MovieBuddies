@@ -54,6 +54,7 @@ body
             p="Bio: "+userData['profileDescription']
       .col-sm-6.col-md-9.col-lg-9
         .mt-2
+        if(userData && (userData['privacy']==0 || friendshipExists==1 || userEmail==email))
           table.table.borderless.table-hover#lastFive
             thead.thead-dark
               tr
