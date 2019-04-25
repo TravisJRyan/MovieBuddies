@@ -249,7 +249,9 @@ app.get("/movie", function (req, res) {
 app.get("/settings", function (req, res) {
     validateLoggedIn(req, res, function () {
         accountHelper.getUser(req.session.email, function(results){
-            res.render("settings"); // TODO
+            res.render("settings",{
+                userData:results
+            }); // TODO
         });
     });
 });
