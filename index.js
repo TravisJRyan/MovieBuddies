@@ -164,10 +164,16 @@ app.get("/", function (req, res) {
         res.redirect("userPage?email=" + req.session.email);
 });
 
+// search operation to lookup a user
 app.get("/userLookup", function(req, res){
     validateLoggedIn(req, res, function () {
         if(req.query.searchEmail){
-            
+            accountHelper.findUsers(req.query.searchEmail, function(results){
+                res.render("userSearchResults", {
+                    userSearchResults: results,
+                    searchTerm:req.query.searchEmail
+                });
+            });
         }
     });
 });
@@ -242,9 +248,8 @@ app.get("/movie", function (req, res) {
 // User settings page
 app.get("/settings", function (req, res) {
     validateLoggedIn(req, res, function () {
-        accountHelper.getuser(req.session.email, function(results){
+        accountHelper.getUser(req.session.email, function(results){
             res.render("settings"); // TODO
-
         });
     });
 });

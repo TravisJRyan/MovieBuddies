@@ -100,7 +100,6 @@ module.exports.getRecentRatings = function(email, callback){
             console.log(err);
             callback([]);
         } else{
-            console.log(results)
             callback(results);
         }
     });

@@ -27,25 +27,19 @@ body
                   input.form-control.ml-lg-4(placeholder='Search', class="form-control" aria-label='Search', name="searchTerm")
                   button.btn.btn-outline-success.my-2.my-sm-0.ml-sm-2(type='submit') Search
 .container.mt-sm-4
-    h3="Friends"
+    h3="Search Results for term '"+searchTerm+"'"
     .table-wrapper-scroll-y.my-custom-scrollbar
         table.table.table-striped.center
-            if(friends)
+            if(userSearchResults)
                 thead.thead-dark
                     tr
                         th Email
                     tbody
-                        for friend in friends
-                            if(friend["sender"]!=userEmail)
-                                tr
-                                    td
-                                        a(href="/userPage?email="+friend["sender"])
-                                            p=friend["sender"]
-                            if(friend["receiver"]!=userEmail)
-                                tr
-                                    td
-                                        a(href="/userPage?email="+friend["receiver"])
-                                            p=friend["receiver"]
+                        for user in userSearchResults
+                            tr
+                                td
+                                    a(href="/userPage?email="+user["email"])
+                                        p=user["email"]
             else
                 h3="No results found!"
 

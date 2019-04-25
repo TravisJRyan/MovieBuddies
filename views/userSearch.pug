@@ -15,7 +15,7 @@ body
                 a#logoLink.navbar-brand(href='/') MovieBuddies
                 ul.navbar-nav.mr-auto
                     li.customLinks
-                        a.navbar-brand(href='/friendrequests') View Friend Request
+                        a.navbar-brand(href='/friendrequests') View Friend Requests
                     li.customLinks
                         a.navbar-brand(href='/moviesrated') Movies Rated
                     li.customLinks
@@ -25,16 +25,18 @@ body
                     li.customLinks
                         a.navbar-brand(href='/friends') Friends
                     li.customLinks           
+                        a.navbar-brand(href='/userSearch') Find Friends
+                    li.customLinks           
                         a.navbar-brand(href='/logout') Logout
                 form.form-inline.my-2.my-lg-0.ml-lg-5(action="/search")
                   input.form-control.ml-lg-4(placeholder='Search', class="form-control" aria-label='Search', name="searchTerm")
                   button.btn.btn-outline-success.my-2.my-sm-0.ml-sm-2(type='submit') Search
 
 .container.mt-sm-4
-    form.form-inline.my-2.my-lg-0.ml-lg-5(action="/userLookup")
-                label.col-2.col-form-label(for='example-number-input') Search for friends:
-                input.form-control.ml-lg-4(placeholder='Search for friends', class="form-control" aria-label='Search', name="searchEmail")
-                button.btn.btn-success.my-2.my-sm-0.ml-sm-2(type='submit') Search
+    form.form-inline.my-2.my-lg-0.ml-lg-5(action="/userLookup" method="GET")
+        label.col-2.col-form-label(for='example-number-input') Search for friends by email:
+        input.form-control.ml-lg-4(placeholder='Search for friends', class="form-control" aria-label='Search', name="searchEmail")
+        button.btn.btn-success.my-2.my-sm-0.ml-sm-2(type='submit') Search
 
 script(src='https://code.jquery.com/jquery-3.3.1.slim.min.js' integrity='sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo' crossorigin='anonymous')
 script(src='https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js' integrity='sha384-wHAiFfRlMFy6i5SRaxvfOCifBUQy1xHdJ/yoi7FRNXMRBu5WHdZYu1hA6ZOblgut' crossorigin='anonymous')

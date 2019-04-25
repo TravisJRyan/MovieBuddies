@@ -242,3 +242,12 @@ module.exports.clearTestData = function (callback) {
         });
     });
 }
+
+module.exports.findUsers = function(searchTerm, callback) {
+    let findUsersSql = "SELECT email FROM Users WHERE email='"+searchTerm+"';";
+    let findUsersQuery = DB.query(findUsersSql, (err, results) => {
+        if (err)
+            console.log(err);
+        callback(results);
+    });
+}
