@@ -5,30 +5,24 @@
 import csv
 import os.path
 import pickle
+import json
+import scipy.sparse as sp
 from sklearn.neighbors import NearestNeighbors
 
 
 ## Returns 5 nearest neighbors of given user data
-def getRecommendations(ratingsData):
-
-  ## load knn model
-  modelFilename = 'knn_model.sav'
-  filehandler = open(modelFilename, 'r') 
-  knn = pickle.load(filehandler)
-
+def getRecommendations(ratingsData, knn, userRatings):
   ##Get neighbors
   data = knn.kneighbors(ratingsData, 5)
   neighbors = data[1][0]
+  print("neighbors")
+  print(neighbors)
 
-  recommendations = getHighestRated(neighbors)
+  recommendations = getHighestRated(neighbors, userRatings)
 
   return (recommendations)
 
-def getHighestRated(neighbors):
-  print("Get highestRated")
-  usersFilename = 'training_users.sav'
-  filehandler = open(usersFilename, 'r') 
-  userRatings = pickle.load(filehandler)
+def getHighestRated(neighbors, userRatings):
 
   movie10 = []
   movie9 = []
@@ -36,6 +30,7 @@ def getHighestRated(neighbors):
 
   for neigh in neighbors:
     for movie in userRatings.getrow(neigh).nonzero()[1]:
+      print(userRatings[neigh,movie])  #### FIGURE THIS SHIT OUT
       if userRatings[neigh, movie] > 9:
         movie10.append(movie)
       elif userRatings[neigh, movie] > 8:
@@ -53,4 +48,33 @@ def getHighestRated(neighbors):
     movies.append(movie)
 
   return(movies)
+
+def prepareOnlineData(jsonRatings):
+  ratings = json.loads(jsonRatings)
+
+  map2Filename = 'ImdbToMovie.sav'
+  filehandler = open(map2Filename, 'r') 
+  ImdbToMovie = pickle.load(filehandler)
+
+  movieIDs = []
+  ratingValues = []
+  for i in range(0, len(ratings)):
+    
+    movieID = ratings[i]["movieID"]
+    movieID = ImdbToMovie[str(movieID)]
+    movieIDs.append(int(movieID))
+    ratingValues.append(int(ratings[i]["rating"]))
+
+  userID = [0] * len(ratings)
+
+  movieIDs.append(193882)
+  ratingValues.append(0)
+  userID.append(0)
+
+  movieRatings = sp.coo_matrix((ratingValues, (userID, movieIDs)))
+
+  return(movieRatings)
+  
+
+
   

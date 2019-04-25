@@ -401,6 +401,18 @@ function getMovieData(movieIDs, callback) {
     }
 }
 
+
+//TEST FUNCTION FOR RECOMMENDATIONS *******REMOVE LATE
+app.get("/testrec", function(req, res){
+
+    dataHelper.recommend("mary@mary.com", function (dataResult) {
+        console.log("testrec result:")
+        console.log(dataResult)
+    });
+    res.redirect("/404");
+
+})
+
 // Redirect unknown routes to 404 page
 app.get("/*", function (req, res) {
     res.redirect("/404");
