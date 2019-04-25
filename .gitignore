@@ -1,6 +1,5 @@
 # Dependency directories
 node_modules/
-secret.json
 node_modules
 .DS_Store
 ML
