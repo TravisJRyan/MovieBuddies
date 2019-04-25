@@ -78,12 +78,13 @@ def createMap():
       movieID, imdbID, discardID = line.strip().split(",")
 
       ## Convert ImdbID for use in URL
-      while(len(imdbID) < 8):
+      while(len(imdbID) < 7):
         imdbID = "0" + imdbID
       imdbID = "tt" + imdbID
 
       movieToImdb[movieID] = imdbID
       ImdbToMovie[imdbID] = movieID
+
   print("Finish loading map data")
   
   return (movieToImdb, ImdbToMovie)
@@ -129,10 +130,10 @@ def trainModel():
   print("Start saving map data")
   ## Pickle test set for testing later
   map1Filename = 'movieToImdb.sav'
-  pickle.dump(test, open(map1Filename, 'wb'))
+  pickle.dump(maps[0], open(map1Filename, 'wb'))
 
   ## Pickle test set for testing later
   map2Filename = 'ImdbToMovie.sav'
-  pickle.dump(test, open(map2Filename, 'wb'))
+  pickle.dump(maps[1], open(map2Filename, 'wb'))
   print("Completed")
 

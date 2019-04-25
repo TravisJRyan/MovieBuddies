@@ -6,6 +6,7 @@ import csv
 import os.path
 import pickle
 import json
+import scipy.sparse as sp
 from sklearn.neighbors import NearestNeighbors
 
 
@@ -14,6 +15,8 @@ def getRecommendations(ratingsData, knn, userRatings):
   ##Get neighbors
   data = knn.kneighbors(ratingsData, 5)
   neighbors = data[1][0]
+  print("neighbors")
+  print(neighbors)
 
   recommendations = getHighestRated(neighbors, userRatings)
 
@@ -27,6 +30,7 @@ def getHighestRated(neighbors, userRatings):
 
   for neigh in neighbors:
     for movie in userRatings.getrow(neigh).nonzero()[1]:
+      print(userRatings[neigh,movie])  #### FIGURE THIS SHIT OUT
       if userRatings[neigh, movie] > 9:
         movie10.append(movie)
       elif userRatings[neigh, movie] > 8:
@@ -54,13 +58,22 @@ def prepareOnlineData(jsonRatings):
 
   movieIDs = []
   ratingValues = []
+  for i in range(0, len(ratings)):
+    
+    movieID = ratings[i]["movieID"]
+    movieID = ImdbToMovie[str(movieID)]
+    movieIDs.append(int(movieID))
+    ratingValues.append(int(ratings[i]["rating"]))
 
-  for movie in ratings:
-    movieID = ratings[0]["movieID"]
-    print(movieID)
-    movieID = ImdbToMovie[movieID]
-    print(movieID)
-    #movieIDs.append(int(ratings[0]["rating"]
+  userID = [0] * len(ratings)
+
+  movieIDs.append(193882)
+  ratingValues.append(0)
+  userID.append(0)
+
+  movieRatings = sp.coo_matrix((ratingValues, (userID, movieIDs)))
+
+  return(movieRatings)
   
 
 

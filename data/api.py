@@ -8,38 +8,34 @@ import test
 import recommend
 
 app = Flask(__name__)
-with app.app_context():
 
-  @app.route('/predict', methods=['POST'])
-  def predict():
+@app.route('/predict', methods=['POST'])
+def predict():
+  print("Start  ML data")
 
-    recommend.prepareOnlineData(request.get_json(force=True))
+  ## load knn model
+  modelFilename = 'knn_model.sav'
+  filehandler = open(modelFilename, 'r') 
+  knn = pickle.load(filehandler)
 
+  ## load training users
+  usersFilename = 'training_users.sav'
+  filehandler = open(usersFilename, 'r') 
+  trainRatings = pickle.load(filehandler)
+  print("Completed")
 
-    #recommendations = request.json
-    return(request.get_json(force=True))
+  userData = recommend.prepareOnlineData(request.get_json(force=True))
 
-
-
-  def main():
-    # load KNN Model
-    modelFilename = 'knn_model.sav'
-    filehandler = open(modelFilename, 'r') 
-    knn = pickle.load(filehandler)
-
-    ## load training users
-    usersFilename = 'training_users.sav'
-    filehandler = open(usersFilename, 'r') 
-    userRatings = pickle.load(filehandler)
-    
-    ## load maps
-    map1Filename = 'movieToImdb.sav'
-    filehandler = open(map1Filename, 'r') 
-    movieToImdb = pickle.load(filehandler)
+  print(userData)
+  recommendations = recommend.getRecommendations(userData, knn, trainRatings)
+  print(recommendations)
+  return("hellow")
 
 
-    
-    app.run(port=3001, debug=True)
+
+def main():
+  train.trainModel()
+  app.run(port=3001, debug=True)
 
 
-  main()
+main()
