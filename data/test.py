@@ -4,12 +4,22 @@ import scipy.sparse as sp
 
 
 
-def main():
+def testScript():
 
       print("Start  ML data")
       filename = 'test_users.sav'
       filehandler = open(filename, 'r') 
       test_users = pickle.load(filehandler)
+
+        ## load knn model
+      modelFilename = 'knn_model.sav'
+      filehandler = open(modelFilename, 'r') 
+      knn = pickle.load(filehandler)
+
+      ## load training users
+      usersFilename = 'training_users.sav'
+      filehandler = open(usersFilename, 'r') 
+      userRatings = pickle.load(filehandler)
       print("Completed")
       success = 0
       failure = 0
@@ -19,7 +29,7 @@ def main():
       users = []
 
       #grab set of unique users in range
-      for i in range(0,25000):
+      for i in range(0,10000):
             if i > 0:
                   if test[i - 1] != test[i]:
                         users.append(test[i-1])
@@ -55,7 +65,7 @@ def main():
             validateMatrix = sp.coo_matrix((validateRatings, ([0]*len(validateMovies), validateMovies)))
    
             ##Get Recommendations and record success/failure
-            recommendations = recommend.getRecommendations(testMatrix)
+            recommendations = recommend.getRecommendations(testMatrix, knn, userRatings)
             currentSuccess = 0
             for movie in recommendations:
                   if(validateMatrix.getrow(0)[0,movie] >= 7):
@@ -74,7 +84,3 @@ def main():
       print("Percentage Successful")
       print(float(success)/float(total)*100)
             
-
-
-
-main()

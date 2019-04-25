@@ -3,28 +3,26 @@ from flask import Flask, request, jsonify
 from sklearn.neighbors import NearestNeighbors
 import traceback
 import train 
+import pickle
+import test
+import recommend
 
-# Your API definition
 app = Flask(__name__)
-
-
 
 
 @app.route('/predict', methods=['POST'])
 def predict():
-  json_ = request.json
-  print(json_)
+  print("here!")
+  print(request.get_json(force=True))
+  print("where")
+
+  #recommendations = request.json
+  return(request.get_json(force=True))
 
 
 
 def main():
-  train.trainModel()
-
-  ## load knn model
-  modelFilename = 'knn_model.sav'
-  filehandler = open(modelFilename, 'r') 
-  knn = pickle.load(filehandler)
-    
+  
   app.run(port=3001, debug=True)
 
 

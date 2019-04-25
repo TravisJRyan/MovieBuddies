@@ -36,15 +36,9 @@ def readData():
 
     for line in csvFile:
       userName, movieID, ratingValue = line.strip().split(",")
-      if previousUser == int(userName):
-        ratingCount = ratingCount + 1
-        currentUser.append(int(userName))
-        currentMovie.append(int(movieID))
-        currentRating.append(int(ratingValue))
-
 
       if previousUser < int(userName):
-        if ratingCount >= 15:
+        if ratingCount >= 25:
           userList.extend(currentUser)
           movieList.extend(currentMovie)
           ratingList.extend(currentRating)
@@ -55,6 +49,11 @@ def readData():
         currentRating = []
         previousUser = int(userName)
         ratingCount = 0
+      
+      ratingCount = ratingCount + 1
+      currentUser.append(int(userName))
+      currentMovie.append(int(movieID))
+      currentRating.append(int(ratingValue))
 
 
 
@@ -126,3 +125,14 @@ def trainModel():
   print("Completed")
 
   maps = createMap()
+
+  print("Start saving map data")
+  ## Pickle test set for testing later
+  map1Filename = 'movieToImdb.sav'
+  pickle.dump(test, open(map1Filename, 'wb'))
+
+  ## Pickle test set for testing later
+  map2Filename = 'ImdbToMovie.sav'
+  pickle.dump(test, open(map2Filename, 'wb'))
+  print("Completed")
+

@@ -9,26 +9,16 @@ from sklearn.neighbors import NearestNeighbors
 
 
 ## Returns 5 nearest neighbors of given user data
-def getRecommendations(ratingsData):
-
-  ## load knn model
-  modelFilename = 'knn_model.sav'
-  filehandler = open(modelFilename, 'r') 
-  knn = pickle.load(filehandler)
-
+def getRecommendations(ratingsData, knn, userRatings):
   ##Get neighbors
   data = knn.kneighbors(ratingsData, 5)
   neighbors = data[1][0]
 
-  recommendations = getHighestRated(neighbors)
+  recommendations = getHighestRated(neighbors, userRatings)
 
   return (recommendations)
 
-def getHighestRated(neighbors):
-  print("Get highestRated")
-  usersFilename = 'training_users.sav'
-  filehandler = open(usersFilename, 'r') 
-  userRatings = pickle.load(filehandler)
+def getHighestRated(neighbors, userRatings):
 
   movie10 = []
   movie9 = []
