@@ -31,23 +31,31 @@ def readData():
     currentUser = []
     currentMovie = []
     currentRating = []
-    previousUser = -1
+    previousUser = 1
     ratingCount = 0
 
     for line in csvFile:
       userName, movieID, ratingValue = line.strip().split(",")
-      if previousUser == int(userName):
-        ratingCount = ratingCount + 1
-        currentUser.append(int(userName))
-        currentMove.append(int(movieID))
-        currentRating.append(int(ratingValue))
 
-      if ratingCount >= 15 && previousUser != userName:
-        userList.append(int(userName))
-        movieList.append(int(movieID))
-        ratingList.append(int(ratingValue))
+      if previousUser < int(userName):
+        if ratingCount >= 25:
+          userList.extend(currentUser)
+          movieList.extend(currentMovie)
+          ratingList.extend(currentRating)
+
+        #Reset current user & previous user
+        currentUser = []
+        currentMovie = []
+        currentRating = []
+        previousUser = int(userName)
         ratingCount = 0
-        
+      
+      ratingCount = ratingCount + 1
+      currentUser.append(int(userName))
+      currentMovie.append(int(movieID))
+      currentRating.append(int(ratingValue))
+
+
 
   movieRatingsByUsers = sp.coo_matrix((ratingList, (userList, movieList)))
   print("Completed loading user rating data")
@@ -70,22 +78,21 @@ def createMap():
       movieID, imdbID, discardID = line.strip().split(",")
 
       ## Convert ImdbID for use in URL
-      while(len(imdbID) < 8):
+      while(len(imdbID) < 7):
         imdbID = "0" + imdbID
       imdbID = "tt" + imdbID
 
       movieToImdb[movieID] = imdbID
       ImdbToMovie[imdbID] = movieID
+
   print("Finish loading map data")
   
   return (movieToImdb, ImdbToMovie)
 
-def main():
+def trainModel():
 
   ## read ratings
   ratingsMatrix = readData()
-
-  print(ratingsMatrix.shape)
 
   print("Start test/train split")
   train, test = train_test_split(ratingsMatrix, test_size=0.2)
@@ -120,6 +127,13 @@ def main():
 
   maps = createMap()
 
-  
+  print("Start saving map data")
+  ## Pickle test set for testing later
+  map1Filename = 'movieToImdb.sav'
+  pickle.dump(maps[0], open(map1Filename, 'wb'))
 
-main()
+  ## Pickle test set for testing later
+  map2Filename = 'ImdbToMovie.sav'
+  pickle.dump(maps[1], open(map2Filename, 'wb'))
+  print("Completed")
+
