@@ -5,6 +5,7 @@
 import csv
 import os.path
 import pickle
+import json
 from sklearn.neighbors import NearestNeighbors
 
 
@@ -43,4 +44,24 @@ def getHighestRated(neighbors, userRatings):
     movies.append(movie)
 
   return(movies)
+
+def prepareOnlineData(jsonRatings):
+  ratings = json.loads(jsonRatings)
+
+  map2Filename = 'ImdbToMovie.sav'
+  filehandler = open(map2Filename, 'r') 
+  ImdbToMovie = pickle.load(filehandler)
+
+  movieIDs = []
+  ratingValues = []
+
+  for movie in ratings:
+    movieID = ratings[0]["movieID"]
+    print(movieID)
+    movieID = ImdbToMovie[movieID]
+    print(movieID)
+    #movieIDs.append(int(ratings[0]["rating"]
+  
+
+
   
