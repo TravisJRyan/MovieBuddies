@@ -13,10 +13,8 @@ from sklearn.neighbors import NearestNeighbors
 ## Returns 5 nearest neighbors of given user data
 def getRecommendations(ratingsData, knn, userRatings):
   ##Get neighbors
-  data = knn.kneighbors(ratingsData, 5)
+  data = knn.kneighbors(ratingsData, 20)
   neighbors = data[1][0]
-  print("neighbors")
-  print(neighbors)
 
   recommendations = getHighestRated(neighbors, userRatings)
 
@@ -28,9 +26,10 @@ def getHighestRated(neighbors, userRatings):
   movie9 = []
   movie8 = []
 
+
+
   for neigh in neighbors:
-    for movie in userRatings.getrow(neigh).nonzero()[1]:
-      print(userRatings[neigh,movie])  #### FIGURE THIS SHIT OUT
+    for movie in userRatings.getrow(int(neigh)).nonzero()[1]:
       if userRatings[neigh, movie] > 9:
         movie10.append(movie)
       elif userRatings[neigh, movie] > 8:
@@ -49,12 +48,8 @@ def getHighestRated(neighbors, userRatings):
 
   return(movies)
 
-def prepareOnlineData(jsonRatings):
+def prepareOnlineData(jsonRatings, ImdbToMovie):
   ratings = json.loads(jsonRatings)
-
-  map2Filename = 'ImdbToMovie.sav'
-  filehandler = open(map2Filename, 'r') 
-  ImdbToMovie = pickle.load(filehandler)
 
   movieIDs = []
   ratingValues = []
@@ -67,7 +62,7 @@ def prepareOnlineData(jsonRatings):
 
   userID = [0] * len(ratings)
 
-  movieIDs.append(193882)
+  movieIDs.append(192579)
   ratingValues.append(0)
   userID.append(0)
 

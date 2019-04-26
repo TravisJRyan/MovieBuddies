@@ -36,26 +36,9 @@ def readData():
 
     for line in csvFile:
       userName, movieID, ratingValue = line.strip().split(",")
-
-      if previousUser < int(userName):
-        if ratingCount >= 25:
-          userList.extend(currentUser)
-          movieList.extend(currentMovie)
-          ratingList.extend(currentRating)
-
-        #Reset current user & previous user
-        currentUser = []
-        currentMovie = []
-        currentRating = []
-        previousUser = int(userName)
-        ratingCount = 0
-      
-      ratingCount = ratingCount + 1
-      currentUser.append(int(userName))
-      currentMovie.append(int(movieID))
-      currentRating.append(int(ratingValue))
-
-
+      userList.append(int(userName))
+      movieList.append(int(movieID))
+      ratingList.append(int(ratingValue))
 
   movieRatingsByUsers = sp.coo_matrix((ratingList, (userList, movieList)))
   print("Completed loading user rating data")
@@ -102,10 +85,7 @@ def trainModel():
   print("Start training model")
   knn = NearestNeighbors()
   knn.fit(train)
-  print("Completed")
-  
 
-  print("Start saving model")
   ## Pickle model to use online later
   modelFilename = 'knn_model.sav'
   pickle.dump(knn, open(modelFilename, 'wb'))

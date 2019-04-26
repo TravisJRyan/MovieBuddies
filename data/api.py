@@ -6,35 +6,45 @@ import train
 import pickle
 import test
 import recommend
+import json
+## load knn model
+modelFilename = 'knn_model.sav'
+filehandler = open(modelFilename, 'r') 
+knn_g = pickle.load(filehandler)
+
+## load training users
+trainFilename = 'training_users.sav'
+filehandler = open(trainFilename, 'r') 
+trainRatings_g = pickle.load(filehandler)
+
+## load Map
+map1Filename = 'movieToImdb.sav'
+filehandler = open(map1Filename, 'r') 
+movieToImdb_g = pickle.load(filehandler)
+
+map2Filename = 'ImdbToMovie.sav'
+filehandler = open(map2Filename, 'r') 
+ImdbToMovie_g = pickle.load(filehandler)
+
 
 app = Flask(__name__)
 
 @app.route('/predict', methods=['POST'])
 def predict():
-  print("Start  ML data")
 
-  ## load knn model
-  modelFilename = 'knn_model.sav'
-  filehandler = open(modelFilename, 'r') 
-  knn = pickle.load(filehandler)
+  userData = recommend.prepareOnlineData(request.get_json(force=True), ImdbToMovie_g)
+  recommendationsGL = recommend.getRecommendations(userData, knn_g, trainRatings_g)
 
-  ## load training users
-  usersFilename = 'training_users.sav'
-  filehandler = open(usersFilename, 'r') 
-  trainRatings = pickle.load(filehandler)
-  print("Completed")
+  recommendationsIMDB = []
+  for rec in recommendationsGL:
+    recommendationsIMDB.append(movieToImdb_g[str(rec)])
 
-  userData = recommend.prepareOnlineData(request.get_json(force=True))
-
-  print(userData)
-  recommendations = recommend.getRecommendations(userData, knn, trainRatings)
-  print(recommendations)
-  return("hellow")
+  print(recommendationsIMDB)
+  return(json.dumps(recommendationsIMDB))
 
 
 
 def main():
-  train.trainModel()
   app.run(port=3001, debug=True)
 
 
