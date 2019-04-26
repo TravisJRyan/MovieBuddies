@@ -45,6 +45,7 @@ def predict():
 
 
 def main():
+  train.trainModel()
   app.run(port=3001, debug=True)
 
 
