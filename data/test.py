@@ -55,8 +55,8 @@ def testScript():
                   count = count +1
 
             #append 0 value at 193882 for correct matrix shape
-            testMovies.append(193882)
-            validateMovies.append(193882)
+            testMovies.append(193886)
+            validateMovies.append(193886)
             testRatings.append(0)
             validateRatings.append(0)
 
@@ -83,4 +83,6 @@ def testScript():
       print(total)
       print("Percentage Successful")
       print(float(success)/float(total)*100)
+
+testScript()
             
