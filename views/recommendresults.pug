@@ -43,7 +43,7 @@ body
                                     td.align-middle(colspan='2')
                                         img(src=movie["Poster"] height=150 width=100)
                                     td
-                                        a(href="/movie?id="+movie["movieID"])="\t"+movie["Title"]
+                                        a(href="/movie?id="+movie["imdbID"])="\t"+movie["Title"]
                                     td
                                         h4=movie["rating"]
             else
