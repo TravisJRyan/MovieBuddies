@@ -51,7 +51,10 @@ def getHighestRated(neighbors, userRatings):
 
   uniqueMovies = []
   for movie in movies:
+    print(movie)
     if movie not in uniqueMovies:
+      print("Unique")
+      print(movie)
       uniqueMovies.append(movie)
 
 

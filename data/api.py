@@ -33,13 +33,13 @@ def predict():
   userData = recommend.prepareOnlineData(request.get_json(force=True), ImdbToMovie_g)
   recommendationsGL = recommend.getRecommendations(userData, knn_g, trainRatings_g)
 
-  recommendationsIMDB = []
-  for rec in recommendationsGL:
-    ImdbID = movieToImdb_g[str(rec)]
-    try:
-      ratingExists = userData[0,ImdbID]
-    except:
-      recommendationsIMDB.append(ImdbID)
+  ##recommendationsIMDB = []
+  ##for rec in recommendationsGL:
+    ##ImdbID = movieToImdb_g[str(rec)]
+    ##try:
+      ##ratingExists = userData[0,ImdbID]
+    ##except:
+      ##recommendationsIMDB.append(ImdbID)
 
   print(recommendationsIMDB)
   return(json.dumps(recommendationsIMDB))
