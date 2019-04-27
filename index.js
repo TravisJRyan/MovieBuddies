@@ -391,6 +391,7 @@ function getMovieData(movieIDs, callback) {
         currentMovieID = movieIDs[i];
         if (movieData.hasOwnProperty(currentMovieID)) { // movie data is in local JSON
             results[currentMovieID] = movieData[currentMovieID];
+	    results[currentMovieID]["imdbID"] = currentMovieID;
             completedRequests++;
             if (completedRequests == movieIDs.length)
                 callback(results);
@@ -399,6 +400,7 @@ function getMovieData(movieIDs, callback) {
                 if (error)
                     console.log(error);
                 results[currentMovieID] = JSON.parse(body);
+	        results[currentMovieID]["imdbID"] = currentMovieID;
                 completedRequests++;
                 if (completedRequests == movieIDs.length)
                     callback(results);
@@ -416,7 +418,8 @@ app.get("/getRecommendation", function(req, res){
 		console.log("MOVIE DATA!");
 		console.log(movieData);
                 res.render("recommendresults", {
-                    movies : movieData
+                    movies : movieData,
+		    movieIDs : mlResults
                 });
             });
         });

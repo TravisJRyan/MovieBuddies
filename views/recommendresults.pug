@@ -36,16 +36,13 @@ body
                         th 
                         th Image
                         th Title
-                        th Rating
                     tbody
-                        for movie in movies
+                        for movieID in movieIDs
                                 tr
                                     td.align-middle(colspan='2')
-                                        img(src=movie["Poster"] height=150 width=100)
+                                        img(src=movies[movieID]["Poster"] height=150 width=100)
                                     td
-                                        a(href="/movie?id="+movie["imdbID"])="\t"+movie["Title"]
-                                    td
-                                        h4=movie["rating"]
+                                        a(href="/movie?id="+movies[movieID]["imdbID"])="\t"+movies[movieID]["Title"]
             else
                 h3="No results found!"
     // Import JQuery, Popper, and Bootstrap Javascript files
