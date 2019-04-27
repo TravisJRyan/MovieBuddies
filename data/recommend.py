@@ -16,6 +16,9 @@ def getRecommendations(ratingsData, knn, userRatings):
   data = knn.kneighbors(ratingsData, 20)
   neighbors = data[1][0]
 
+  print(ratingsData.shape)
+  print(userRatings.shape)
+
   recommendations = getHighestRated(neighbors, userRatings)
 
   return (recommendations)
@@ -62,7 +65,7 @@ def prepareOnlineData(jsonRatings, ImdbToMovie):
 
   userID = [0] * len(ratings)
 
-  movieIDs.append(193886)
+  movieIDs.append(193882)
   ratingValues.append(0)
   userID.append(0)
 

@@ -2,9 +2,7 @@
 from flask import Flask, request, jsonify, current_app
 from sklearn.neighbors import NearestNeighbors
 import traceback
-import train 
 import pickle
-import test
 import recommend
 import json
 ## load knn model
@@ -31,7 +29,7 @@ app = Flask(__name__)
 
 @app.route('/predict', methods=['POST'])
 def predict():
-
+  print(request.get_json(force=True))
   userData = recommend.prepareOnlineData(request.get_json(force=True), ImdbToMovie_g)
   recommendationsGL = recommend.getRecommendations(userData, knn_g, trainRatings_g)
 

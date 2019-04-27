@@ -117,3 +117,4 @@ def trainModel():
   pickle.dump(maps[1], open(map2Filename, 'wb'))
   print("Completed")
 
+trainModel()

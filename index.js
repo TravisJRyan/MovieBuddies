@@ -407,6 +407,21 @@ function getMovieData(movieIDs, callback) {
     }
 }
 
+app.get("/getRecommendation", function(req, res){
+    validateLoggedIn(req, res, function(){
+        dataHelper.recommend(req.session.email, function (mlResults) {
+		console.log("ML results!");
+		console.log(mlResults);
+            getMovieData(mlResults, function(movieData){
+		console.log("MOVIE DATA!");
+		console.log(movieData);
+                res.render("recommendresults", {
+                    movies : movieData
+                });
+            });
+        });
+    });
+});
 
 //TEST FUNCTION FOR RECOMMENDATIONS *******REMOVE LATE
 app.get("/testrec", function(req, res){
