@@ -411,15 +411,11 @@ function getMovieData(movieIDs, callback) {
 
 app.get("/getRecommendation", function(req, res){
     validateLoggedIn(req, res, function(){
-        dataHelper.recommend(req.session.username, function (mlResults) {
+        dataHelper.recommend(req.session.email, function (mlResults) {
             getMovieData(mlResults, function(movieData){
                 res.render("recommendresults", {
-<<<<<<< HEAD
-                    movies : dataResults
-=======
                     movies : movieData,
 		    movieIDs : mlResults
->>>>>>> 26be65e4a5bebc6f780e4a348cc477c741902b8d
                 });
             });
         });
