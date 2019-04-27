@@ -409,26 +409,23 @@ function getMovieData(movieIDs, callback) {
 
 app.get("/getRecommendation", function(req, res){
     validateLoggedIn(req, res, function(){
-        dataHelper.recommend(req.session.email, function (mlResults) {
-		console.log("ML results!");
-		console.log(mlResults);
+        dataHelper.recommend(req.session.username, function (mlResults) {
             getMovieData(mlResults, function(movieData){
-		console.log("MOVIE DATA!");
-		console.log(movieData);
                 res.render("recommendresults", {
-                    movies : movieData
+                    movies : dataResults
                 });
             });
         });
     });
-});
+})
+
 
 //TEST FUNCTION FOR RECOMMENDATIONS *******REMOVE LATE
 app.get("/testrec", function(req, res){
 
-    dataHelper.recommend("mary@mary.com", function (dataResult) {
-        console.log("testrec result:")
-        console.log(dataResult)
+    dataHelper.recommend("tuesday@email.com", function (dataResult) {
+        console.log("testrec result:");
+        console.log(dataResult);
     });
     res.redirect("/404");
 
