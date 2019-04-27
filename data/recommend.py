@@ -49,6 +49,12 @@ def getHighestRated(neighbors, userRatings):
   for movie in movie8:
     movies.append(movie)
 
+  uniqueMovies = []
+  for movie in movies:
+    if movie not in uniqueMovies:
+      uniqueMovies.append(movie)
+
+
   return(movies)
 
 def prepareOnlineData(jsonRatings, ImdbToMovie):

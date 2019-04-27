@@ -35,7 +35,11 @@ def predict():
 
   recommendationsIMDB = []
   for rec in recommendationsGL:
-    recommendationsIMDB.append(movieToImdb_g[str(rec)])
+    ImdbID = movieToImdb_g[str(rec)]
+    try:
+      ratingExists = userData[0,ImdbID]
+    except:
+      recommendationsIMDB.append(ImdbID)
 
   print(recommendationsIMDB)
   return(json.dumps(recommendationsIMDB))
