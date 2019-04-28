@@ -86,22 +86,22 @@ app.post("/register", function (req, res) {
 });
 
 // POST operation for settings update
-app.post('/updatesettings', function(req, res){
-    validateLoggedIn(req, res, function(){
-        accountHelper.updateSettings(req.session.email,req.body, function(results){
-            res.redirect("/userPage?email="+req.session.email);
+app.post('/updatesettings', function (req, res) {
+    validateLoggedIn(req, res, function () {
+        accountHelper.updateSettings(req.session.email, req.body, function (results) {
+            res.redirect("/userPage?email=" + req.session.email);
         });
     });
 });
 
 // operation for logging out
-app.get("/logout", function(req, res) {
+app.get("/logout", function (req, res) {
     req.session.destroy(); // destroy session
     res.redirect("/"); // redirect to login page
 });
 
 // Login page
-app.get("/login", function(req, res) {
+app.get("/login", function (req, res) {
     if (req.session.username)
         res.redirect("/");
     else if (req.query.loginFailure && req.query.loginFailure == "true") {
@@ -165,13 +165,13 @@ app.get("/", function (req, res) {
 });
 
 // search operation to lookup a user
-app.get("/userLookup", function(req, res){
+app.get("/userLookup", function (req, res) {
     validateLoggedIn(req, res, function () {
-        if(req.query.searchEmail){
-            accountHelper.findUsers(req.query.searchEmail, function(results){
+        if (req.query.searchEmail) {
+            accountHelper.findUsers(req.query.searchEmail, function (results) {
                 res.render("userSearchResults", {
                     userSearchResults: results,
-                    searchTerm:req.query.searchEmail
+                    searchTerm: req.query.searchEmail
                 });
             });
         }
@@ -248,9 +248,9 @@ app.get("/movie", function (req, res) {
 // User settings page
 app.get("/settings", function (req, res) {
     validateLoggedIn(req, res, function () {
-        accountHelper.getUser(req.session.email, function(results){
-            res.render("settings",{
-                userData:results
+        accountHelper.getUser(req.session.email, function (results) {
+            res.render("settings", {
+                userData: results
             }); // TODO
         });
     });
@@ -279,13 +279,6 @@ app.get("/friendrequests", function (req, res) {
                 userEmail: req.session.email
             });
         });
-    });
-});
-
-// Movie recommendation page
-app.get("/recommend", function (req, res) {
-    validateLoggedIn(req, res, function () {
-        res.render("recommend");
     });
 });
 
@@ -391,7 +384,7 @@ function getMovieData(movieIDs, callback) {
         currentMovieID = movieIDs[i];
         if (movieData.hasOwnProperty(currentMovieID)) { // movie data is in local JSON
             results[currentMovieID] = movieData[currentMovieID];
-	    results[currentMovieID]["imdbID"] = currentMovieID;
+            results[currentMovieID]["imdbID"] = currentMovieID;
             completedRequests++;
             if (completedRequests == movieIDs.length)
                 callback(results);
@@ -400,7 +393,7 @@ function getMovieData(movieIDs, callback) {
                 if (error)
                     console.log(error);
                 results[currentMovieID] = JSON.parse(body);
-	        results[currentMovieID]["imdbID"] = currentMovieID;
+                results[currentMovieID]["imdbID"] = currentMovieID;
                 completedRequests++;
                 if (completedRequests == movieIDs.length)
                     callback(results);
@@ -409,13 +402,15 @@ function getMovieData(movieIDs, callback) {
     }
 }
 
-app.get("/getRecommendation", function(req, res){
-    validateLoggedIn(req, res, function(){
+app.get("/recommend", function (req, res) {
+    validateLoggedIn(req, res, function () {
         dataHelper.recommend(req.session.email, function (mlResults) {
-            getMovieData(mlResults, function(movieData){
+            if(mlResults.length==0)
+                res.send("No recommendations could be given. Please rate more movies to get an accurate result.");
+            getMovieData(mlResults, function (movieData) {
                 res.render("recommendresults", {
-                    movies : movieData,
-		    movieIDs : mlResults
+                    movies: movieData,
+                    movieIDs: mlResults
                 });
             });
         });
@@ -424,7 +419,7 @@ app.get("/getRecommendation", function(req, res){
 
 
 //TEST FUNCTION FOR RECOMMENDATIONS *******REMOVE LATE
-app.get("/testrec", function(req, res){
+app.get("/testrec", function (req, res) {
 
     dataHelper.recommend("tuesday@email.com", function (dataResult) {
         console.log("testrec result:");
