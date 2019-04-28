@@ -61,8 +61,8 @@ def createMap():
       movieID, imdbID, discardID = line.strip().split(",")
 
       ## Convert ImdbID for use in URL
-      while(len(imdbID) < 7):
-        imdbID = "0" + imdbID
+    #  while(len(imdbID) < 7):
+ #     imdbID = "0" + imdbID
       imdbID = "tt" + imdbID
 
       movieToImdb[movieID] = imdbID
