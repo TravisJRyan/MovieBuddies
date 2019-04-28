@@ -58,7 +58,7 @@ def getHighestRated(neighbors, userRatings):
       uniqueMovies.append(movie)
 
 
-  return(movies)
+  return(uniqueMovies)
 
 def prepareOnlineData(jsonRatings, ImdbToMovie):
   ratings = json.loads(jsonRatings)
@@ -68,15 +68,22 @@ def prepareOnlineData(jsonRatings, ImdbToMovie):
   for i in range(0, len(ratings)):
     
     movieID = ratings[i]["movieID"]
-    movieID = ImdbToMovie[str(movieID)]
-    movieIDs.append(int(movieID))
-    ratingValues.append(int(ratings[i]["rating"]))
+    print(movieID)
+    try: 
+      movieID = ImdbToMovie[str(movieID)]
+      movieIDs.append(int(movieID))
+      ratingValues.append(int(ratings[i]["rating"]))
+    except KeyError:
+      print("error")
 
-  userID = [0] * len(ratings)
 
   movieIDs.append(193882)
+  userID = [0] * len(movieIDs)
   ratingValues.append(0)
-  userID.append(0)
+
+  print(len(movieIDs))
+  print(len(userID))
+  print(len(ratingValues))
 
   movieRatings = sp.coo_matrix((ratingValues, (userID, movieIDs)))
 
