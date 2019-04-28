@@ -76,12 +76,12 @@ app.post("/register", function (req, res) {
                     req.session.email = req.body.email;
                     res.redirect("/userPage?email=" + req.session.email);
                 } else {
-                    res.send("Failed to register.");
+                    errorPage(res, "Something went wrong. Failed to register.");
                 }
             });
         })
     } else {
-        res.send("Please supply all fields for registration")
+        errorPage(res, "Please supply all fields for registration")
     }
 });
 
@@ -189,7 +189,7 @@ app.get("/search", function (req, res) {
                 });
             });
         } else {
-            res.send("Please provide a search term.");
+            errorPage(res, "Please provide a search term for searching.");
         }
     });
 });
@@ -212,7 +212,7 @@ app.get("/movie", function (req, res) {
         if (req.query.id) {
             dataHelper.getRating(req.session.email, req.query.id, function (existingRating) { // check if user has already rated
                 if (existingRating == -1)
-                    res.send("There was an error receiving the user's ratings.")
+                    errorPage(res, "There was an error receiving the user's ratings.")
                 else {
                     existingRating = existingRating;
                     var movieId = req.query.id;
@@ -227,7 +227,7 @@ app.get("/movie", function (req, res) {
                     } else { // movie data is not in local JSON, hit API
                         request('https://www.omdbapi.com/?i=' + movieId + '&apikey=b09eb4ff', function (error, response, body) {
                             if (JSON.parse(body)["Response"] == "False")
-                                res.send("No movie was found for that ID.");
+                                errorPage(res, "No movie was found for that ID.");
                             else {
                                 res.render("movie", {
                                     movie: JSON.parse(body),
@@ -240,7 +240,7 @@ app.get("/movie", function (req, res) {
                 }
             });
         } else {
-            res.send("Please supply a movie ID");
+            errorPage(res, "Please supply a movie ID");
         }
     });
 });
@@ -288,7 +288,7 @@ app.get("/rateMovie", function (req, res) {
         if (req.session.email && req.query.rating && req.query.movieId) {
             dataHelper.addRating(req.session.email, req.query.movieId, req.query.rating, function (result) {
                 if (!result)
-                    res.send("There was an error rating the movie.");
+                    errorPage(res, "Sorry, there was an error rating the movie.");
                 else {
                     res.redirect("/movie?id=" + req.query.movieId);
                 }
@@ -331,7 +331,7 @@ app.get("/userPage", function (req, res) {
                                 res.redirect("/404"); // user does not exist
                             else { // user exists
                                 if (results == -1) // SQL error
-                                    res.send("An error occurred gathering user ratings.");
+                                    errorPage(res, "An error occurred gathering user ratings.");
                                 else if (results.length == 0) { // TODO : make it impossible to visit nonexistant user's pages
                                     res.render("userPage", {
                                         movies: [],
@@ -405,34 +405,30 @@ function getMovieData(movieIDs, callback) {
 app.get("/recommend", function (req, res) {
     validateLoggedIn(req, res, function () {
         dataHelper.recommend(req.session.email, function (mlResults) {
-            if(mlResults.length==0)
-                res.send("No recommendations could be given. Please rate more movies to get an accurate result.");
-            getMovieData(mlResults, function (movieData) {
-                res.render("recommendresults", {
-                    movies: movieData,
-                    movieIDs: mlResults
+            if (mlResults.length == 0)
+                errorPage(res, "No recommendations could be given. Please rate more movies to get an accurate result.");
+            else {
+                getMovieData(mlResults, function (movieData) {
+                    res.render("recommendresults", {
+                        movies: movieData,
+                        movieIDs: mlResults
+                    });
                 });
-            });
+            }
         });
     });
-})
-
-
-//TEST FUNCTION FOR RECOMMENDATIONS *******REMOVE LATE
-app.get("/testrec", function (req, res) {
-
-    dataHelper.recommend("tuesday@email.com", function (dataResult) {
-        console.log("testrec result:");
-        console.log(dataResult);
-    });
-    res.redirect("/404");
-
-})
+});
 
 // Redirect unknown routes to 404 page
 app.get("/*", function (req, res) {
     res.redirect("/404");
 });
+
+function errorPage(res, message) {
+    res.render("errorpage", {
+        message: message
+    });
+}
 
 // Function validates session and redirects if not
 function validateLoggedIn(req, res, callback) {
