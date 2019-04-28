@@ -169,7 +169,7 @@ app.get("/userLookup", function (req, res) {
     validateLoggedIn(req, res, function () {
         if (req.query.searchEmail) {
             accountHelper.findUsers(req.query.searchEmail, function (results) {
-                res.render("userSearchResults", {
+                res.render("usersearchresults", {
                     userSearchResults: results,
                     searchTerm: req.query.searchEmail
                 });
@@ -406,7 +406,7 @@ app.get("/recommend", function (req, res) {
     validateLoggedIn(req, res, function () {
         dataHelper.recommend(req.session.email, function (mlResults) {
             if (mlResults.length == 0)
-                errorPage(res, "No recommendations could be given. Please rate more movies to get an accurate result.");
+                errorPage(res, "No recommendations could be given. Please rate more movies to get an accurate result. (15+ ratings are recommended before getting recommendations.)");
             else {
                 getMovieData(mlResults, function (movieData) {
                     res.render("recommendresults", {
