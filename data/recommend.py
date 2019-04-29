@@ -16,9 +16,6 @@ def getRecommendations(ratingsData, knn, userRatings):
   data = knn.kneighbors(ratingsData, 20)
   neighbors = data[1][0]
 
-  print(ratingsData.shape)
-  print(userRatings.shape)
-
   recommendations = getHighestRated(neighbors, userRatings)
 
   return (recommendations)
@@ -51,10 +48,7 @@ def getHighestRated(neighbors, userRatings):
 
   uniqueMovies = []
   for movie in movies:
-    print(movie)
     if movie not in uniqueMovies:
-      print("Unique")
-      print(movie)
       uniqueMovies.append(movie)
 
 
