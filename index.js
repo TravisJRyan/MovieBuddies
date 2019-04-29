@@ -147,6 +147,8 @@ app.get("/moviesrated", function (req, res) {
                 movieIDs.push(results[i]["movieID"]);
             }
             getMovieData(movieIDs, function (dataResult) {
+                console.log(dataResult["tt0046183"]);
+                console.log(results);
                 res.render("moviesrated", {
                     movieData: dataResult,
                     ratings: results
