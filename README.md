@@ -20,3 +20,5 @@ The unit tests are located in helperClasses/test.js. To run them, run "node help
 
 ## Project Location ##
 The website should be hosted here: http://142.93.159.0:3000
+
+If there are issues with the hosting, you can try running the project locally. The model will not be trained for the machine learning, but all other functionality should work if you download the project and run locally.
