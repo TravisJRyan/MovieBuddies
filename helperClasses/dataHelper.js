@@ -52,7 +52,7 @@ module.exports.recommend = function (email, callback) {
                 console.log(err);
                 callback(false);
             } else {
-                request.post('http://142.93.159.0:3001/predict',
+                request.post('http://localhost:3001/predict',
                     { json: JSON.stringify(results) },
                     function (error, response, body) {
                         if (error)
