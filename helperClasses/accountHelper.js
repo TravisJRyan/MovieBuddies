@@ -5,9 +5,33 @@ const secretVars = JSON.parse(fs.readFileSync('secret.json', 'utf8')); // import
 
 var DB;
 
+DB = mysql.createConnection({
+    host: secretVars["host"],
+    user: secretVars["user"],
+    password: secretVars["password"],
+    database: secretVars["database"]
+});
+
+DB.connect(function (err) {
+    if (err) {
+        console.log('error when connecting to db:', err);
+        //setTimeout(handleDisconnect(callback), 2000);
+    }
+});
+
+DB.on('error', function (err) {
+    if (err.code === 'PROTOCOL_CONNECTION_LOST') {
+        handleDisconnect(function(){});
+    } else {
+        throw err;
+    }
+});
+
 // Function to Handle Disconnect Issue
 // Source: https://stackoverflow.com/questions/20210522/nodejs-mysql-error-connection-lost-the-server-closed-the-connection
 function handleDisconnect(callback) {
+
+    DB.destroy();
     
     DB = mysql.createConnection({
         host: secretVars["host"],

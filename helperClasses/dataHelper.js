@@ -5,10 +5,34 @@ const request = require('request'); // HTTP request module
 
 var DB;
 
+DB = mysql.createConnection({
+    host: secretVars["host"],
+    user: secretVars["user"],
+    password: secretVars["password"],
+    database: secretVars["database"]
+});
+
+DB.connect(function (err) {
+    if (err) {
+        console.log('error when connecting to db:', err);
+        //setTimeout(handleDisconnect(callback), 2000);
+    }
+});
+
+DB.on('error', function (err) {
+    if (err.code === 'PROTOCOL_CONNECTION_LOST') {
+        handleDisconnect(function(){});
+    } else {
+        throw err;
+    }
+});
+
 // Function to Handle Disconnect Issue
 // Source: https://stackoverflow.com/questions/20210522/nodejs-mysql-error-connection-lost-the-server-closed-the-connection
 function handleDisconnect(callback) {
 
+    DB.destroy();
+    
     DB = mysql.createConnection({
         host: secretVars["host"],
         user: secretVars["user"],
@@ -19,7 +43,7 @@ function handleDisconnect(callback) {
     DB.connect(function (err) {
         if (err) {
             console.log('error when connecting to db:', err);
-            setTimeout(handleDisconnect(callback), 2000);
+            //setTimeout(handleDisconnect(callback), 2000);
         }
         else {
             callback();
@@ -27,43 +51,11 @@ function handleDisconnect(callback) {
     });
     DB.on('error', function (err) {
         if (err.code === 'PROTOCOL_CONNECTION_LOST') {
-            handleDisconnect(callback);
+            handleDisconnect(function(){});
         } else {
             throw err;
         }
     });
-
-}
-
-// TODO: function takes a user's email and returns a list of IMDB ID's for recommended movies by using ML
-module.exports.recommend = function (email, callback) {
-    handleDisconnect(function () {
-
-        //exit if null value
-        if (!email)
-            callback(false);
-
-        let ratingsSQL = "select movieID, rating " +
-            "from ratings " +
-            "where email='" + email + "';";
-
-        let ratingQuery = DB.query(ratingsSQL, (err, results) => {
-            if (err) {
-                console.log(err);
-                callback(false);
-            } else {
-                request.post('http://localhost:3001/predict',
-                    { json: JSON.stringify(results) },
-                    function (error, response, body) {
-                        if (error)
-                            console.log(error);
-                        else
-                            callback(body);
-                    });
-            }
-        });
-    });
-
 }
 
 // function processes a new movie rating for a user
