@@ -58,6 +58,37 @@ function handleDisconnect(callback) {
     });
 }
 
+// TODO: function takes a user's email and returns a list of IMDB ID's for recommended movies by using ML
+module.exports.recommend = function (email, callback) {
+    handleDisconnect(function () {
+
+        //exit if null value
+        if (!email)
+            callback(false);
+
+        let ratingsSQL = "select movieID, rating " +
+            "from ratings " +
+            "where email='" + email + "';";
+
+        let ratingQuery = DB.query(ratingsSQL, (err, results) => {
+            if (err) {
+                console.log(err);
+                callback(false);
+            } else {
+                request.post('http://localhost:3001/predict',
+                    { json: JSON.stringify(results) },
+                    function (error, response, body) {
+                        if (error)
+                            console.log(error);
+                        else
+                            callback(body);
+                    });
+            }
+        });
+    });
+
+}
+
 // function processes a new movie rating for a user
 // callbacks false if insert operation failed, true if success
 // TODO: Need to add timestamps to ratings so we can sort them for user pages
