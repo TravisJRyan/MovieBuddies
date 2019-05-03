@@ -19,7 +19,7 @@ function handleDisconnect(callback) {
     DB.connect(function (err) {
         if (err) {
             console.log('error when connecting to db:', err);
-            setTimeout(handleDisconnect(callback), 2000);
+            //setTimeout(handleDisconnect(callback), 2000);
         }
         else {
             callback();
@@ -27,7 +27,7 @@ function handleDisconnect(callback) {
     });
     DB.on('error', function (err) {
         if (err.code === 'PROTOCOL_CONNECTION_LOST') {
-            handleDisconnect(callback);
+            handleDisconnect(function(){});
         } else {
             throw err;
         }
